@@ -104,8 +104,14 @@ function togglePause() {
 function resetGame() {
     clearInterval(gameLoop);
     resetGameState();
-    initGame();
+    drawEmptyBoard();
     showOverlay('准备开始', '点击开始按钮开始游戏');
+}
+
+function drawEmptyBoard() {
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawGrid();
 }
 
 function resetGameState() {
@@ -176,7 +182,7 @@ function checkCollision(head) {
         return true;
     }
     
-    for (let i = 0; i < snake.length; i++) {
+    for (let i = 0; i < snake.length - 1; i++) {
         if (snake[i].x === head.x && snake[i].y === head.y) {
             return true;
         }
