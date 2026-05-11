@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 数字方块</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1 class="game-title">2048</h1>
+            <div class="score-container">
+                <div class="score-box">
+                    <div class="score-label">分数</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+                <div class="score-box">
+                    <div class="score-label">最高分</div>
+                    <div class="score-value" id="best-score">0</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="game-controls">
+            <p class="game-intro">使用 <strong>方向键</strong> 或 <strong>滑动屏幕</strong> 移动方块</p>
+            <div class="button-group">
+                <button class="btn-new-game" id="new-game-btn">新游戏</button>
+                <button class="btn-hint" id="hint-btn" title="下一步建议">💡 提示</button>
+                <button class="btn-leaderboard" id="leaderboard-btn">🏆 排行榜</button>
+            </div>
+        </div>
+
+        <div class="game-info">
+            <div class="game-stat">
+                <span class="stat-label">步数</span>
+                <span class="stat-value" id="moves-count">0</span>
+            </div>
+            <div class="game-stat">
+                <span class="stat-label">用时</span>
+                <span class="stat-value" id="time-count">00:00</span>
+            </div>
+            <label class="hint-toggle">
+                <input type="checkbox" id="auto-hint-toggle">
+                <span class="toggle-slider"></span>
+                <span class="toggle-label">自动提示</span>
+            </label>
+        </div>
+
+        <div class="hint-indicator" id="hint-indicator">
+            <div class="hint-arrow" id="hint-arrow-up">↑</div>
+            <div class="hint-arrow" id="hint-arrow-down">↓</div>
+            <div class="hint-arrow" id="hint-arrow-left">←</div>
+            <div class="hint-arrow" id="hint-arrow-right">→</div>
+        </div>
+        
+        <div class="game-board" id="game-board">
+            <div class="grid-container" id="grid-container"></div>
+            <div class="tile-container" id="tile-container"></div>
+            
+            <div class="game-message" id="game-message">
+                <div class="message-content">
+                    <h2 id="message-title">游戏结束</h2>
+                    <button class="btn-continue" id="continue-btn">继续游戏</button>
+                    <button class="btn-retry" id="retry-btn">再来一局</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="leaderboard-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏆 最高分排行榜</h2>
+                <button class="modal-close" id="leaderboard-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="leaderboard-empty" id="leaderboard-empty">
+                    暂无记录，快来挑战吧！
+                </div>
+                <table class="leaderboard-table" id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>分数</th>
+                            <th>步数</th>
+                            <th>用时</th>
+                            <th>日期</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-tbody"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-reset-leaderboard" id="reset-leaderboard-btn">清空排行榜</button>
+                <button class="btn-close-modal" id="close-leaderboard-btn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
