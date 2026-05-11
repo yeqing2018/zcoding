@@ -1,0 +1,253 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 10px;
+    min-width: 70px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.timer {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.game-info {
+    margin-bottom: 20px;
+}
+
+.status {
+    font-size: 1.2rem;
+    color: #666;
+    font-weight: bold;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 5px;
+    background: #333;
+    padding: 5px;
+    border-radius: 10px;
+    margin: 0 auto 25px;
+}
+
+.cell {
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+}
+
+.cell:hover:not(.filled) {
+    background: #f0f0f0;
+}
+
+.cell.filled {
+    cursor: not-allowed;
+}
+
+.cell.x {
+    color: #e74c3c;
+}
+
+.cell.o {
+    color: #3498db;
+}
+
+.cell.winner {
+    background: #f1c40f;
+    animation: pulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.05);
+    }
+}
+
+.reset-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.reset-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.reset-btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 15px;
+        margin: 10px;
+        max-width: 95vw;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .stats {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .stat-item {
+        padding: 8px 12px;
+        min-width: 60px;
+    }
+    
+    .stat-label {
+        font-size: 0.75rem;
+    }
+    
+    .stat-value {
+        font-size: 1.2rem;
+    }
+    
+    .timer {
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+    }
+    
+    .status {
+        font-size: 1rem;
+    }
+    
+    .board {
+        grid-template-columns: repeat(3, 90px);
+        grid-template-rows: repeat(3, 90px);
+        gap: 4px;
+        padding: 4px;
+    }
+    
+    .cell {
+        font-size: 2.5rem;
+    }
+    
+    .reset-btn {
+        padding: 10px 25px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .container {
+        padding: 15px 10px;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+    }
+    
+    .stat-item {
+        padding: 6px 10px;
+        min-width: 55px;
+    }
+    
+    .stat-label {
+        font-size: 0.7rem;
+    }
+    
+    .stat-value {
+        font-size: 1.1rem;
+    }
+    
+    .timer {
+        font-size: 0.85rem;
+        margin-bottom: 10px;
+    }
+    
+    .status {
+        font-size: 0.95rem;
+    }
+    
+    .board {
+        grid-template-columns: repeat(3, 75px);
+        grid-template-rows: repeat(3, 75px);
+        gap: 3px;
+        padding: 3px;
+    }
+    
+    .cell {
+        font-size: 2rem;
+    }
+    
+    .reset-btn {
+        padding: 9px 22px;
+        font-size: 0.9rem;
+    }
+}
