@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打砖块休闲游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <div class="header-left">
+                <button id="pauseBtn" class="icon-btn">⏸️ 暂停</button>
+                <button id="leaderboardBtn" class="icon-btn">🏆 排行榜</button>
+            </div>
+            <div class="header-center">
+                <div class="current-score">
+                    <span class="label">当前分数</span>
+                    <span id="score" class="value">0</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="high-score">
+                    <span class="label">最高分</span>
+                    <span id="highScore" class="value">0</span>
+                </div>
+                <div class="lives-item">
+                    <span class="label">生命值</span>
+                    <span id="lives" class="value">3</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            <div id="message" class="game-message hidden">
+                <h2 id="messageTitle"></h2>
+                <p id="messageText"></p>
+            </div>
+            <div id="pauseOverlay" class="pause-overlay hidden">
+                <div class="pause-content">
+                    <h2>⏸️ 游戏暂停</h2>
+                    <div class="pause-buttons">
+                        <button id="resumeBtn">继续游戏</button>
+                        <button id="pauseRestartBtn">重新开始</button>
+                        <button id="pauseLeaderboardBtn">查看排行榜</button>
+                    </div>
+                </div>
+            </div>
+            <div id="leaderboardOverlay" class="pause-overlay hidden">
+                <div class="leaderboard-content">
+                    <h2>🏆 排行榜</h2>
+                    <div class="leaderboard-list" id="leaderboardList">
+                        <p class="no-records">暂无记录</p>
+                    </div>
+                    <div class="pause-buttons">
+                        <button id="leaderboardBackBtn">返回游戏</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <button id="restartBtn">重新开始</button>
+            <button id="startBtn">开始游戏</button>
+            <button id="mainLeaderboardBtn">排行榜</button>
+        </div>
+        
+        <div class="game-instructions">
+            <p>使用 ← → 方向键移动挡板，空格键发射球，P 键暂停/继续</p>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
