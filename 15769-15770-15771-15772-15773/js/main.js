@@ -119,6 +119,12 @@ class GameController {
     continueGame() {
         this.game.continueGame();
         this.hideMessage();
+        this.gameActive = true;
+        this.resumeTimer();
+
+        if (this.autoHintEnabled) {
+            setTimeout(() => this.showHint(), 300);
+        }
 
         if (this.game.isGameOver()) {
             setTimeout(() => this.showGameOverMessage(), 100);
@@ -173,6 +179,14 @@ class GameController {
         if (this.timerInterval) {
             clearInterval(this.timerInterval);
             this.timerInterval = null;
+        }
+    }
+
+    resumeTimer() {
+        if (!this.timerInterval) {
+            this.timerInterval = setInterval(() => {
+                this.updateTime();
+            }, 1000);
         }
     }
 
