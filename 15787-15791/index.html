@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猜数字游戏</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="theme-toggle">
+        <button id="theme-btn" class="theme-btn" title="切换主题">
+            <span id="theme-icon">🌙</span>
+        </button>
+        <button id="help-btn" class="theme-btn" title="游戏帮助">
+            <span>❓</span>
+        </button>
+        <button id="settings-btn" class="theme-btn" title="数据管理">
+            <span>⚙️</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <h1>猜数字游戏</h1>
+        
+        <div class="player-info">
+            <span class="player-label">玩家：</span>
+            <span id="player-nickname" class="player-name">访客</span>
+            <button id="change-name-btn" class="btn btn-small">修改</button>
+        </div>
+        
+        <div class="game-info">
+            <div class="info-item">
+                <span class="label">剩余次数：</span>
+                <span id="remaining-guesses" class="value">7</span>
+            </div>
+            <div class="info-item">
+                <span class="label">已猜次数：</span>
+                <span id="guesses-made" class="value">0</span>
+            </div>
+            <div class="info-item">
+                <span class="label">用时：</span>
+                <span id="game-timer" class="value">0s</span>
+            </div>
+        </div>
+
+        <div class="game-description">
+            <p>系统已生成一个 1-100 之间的神秘数字</p>
+            <p>请在下面输入你的猜测，最多 7 次机会！</p>
+        </div>
+
+        <div class="input-section">
+            <input type="text" id="guess-input" class="input-field" placeholder="请输入 1-100 的整数">
+            <button id="guess-button" class="btn btn-primary">猜测</button>
+            <button id="hint-button" class="btn btn-hint">💡 提示 (消耗1次)</button>
+        </div>
+
+        <div id="message" class="message hidden"></div>
+
+        <div class="history-section">
+            <h3>猜测历史</h3>
+            <ul id="guess-history" class="history-list">
+                <li class="no-history">还没有猜测记录</li>
+            </ul>
+        </div>
+
+        <div class="action-buttons">
+            <button id="restart-button" class="btn btn-secondary">重新开始</button>
+            <button id="show-leaderboard-btn" class="btn btn-secondary">🏆 排行榜</button>
+        </div>
+    </div>
+
+    <div id="nickname-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>设置你的昵称</h2>
+            <input type="text" id="nickname-input" class="input-field" placeholder="请输入昵称（最多10字符）" maxlength="10">
+            <div class="modal-buttons">
+                <button id="save-nickname-btn" class="btn btn-primary">确定</button>
+                <button id="cancel-nickname-btn" class="btn btn-secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="hint-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>使用提示</h2>
+            <p>使用一次提示将消耗 <strong>1 次猜测机会</strong></p>
+            <p>当前剩余次数：<span id="hint-remaining">7</span></p>
+            <div class="modal-buttons">
+                <button id="confirm-hint-btn" class="btn btn-primary">确认使用</button>
+                <button id="cancel-hint-btn" class="btn btn-secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="leaderboard-modal" class="modal hidden">
+        <div class="modal-content leaderboard-content">
+            <h2>🏆 排行榜</h2>
+            
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="guesses">最少次数</button>
+                <button class="tab-btn" data-tab="time">最快通关</button>
+                <button class="tab-btn" data-tab="personal">我的记录</button>
+            </div>
+            
+            <div class="tab-content active" id="tab-guesses">
+                <h3>👑 最少猜测次数排行榜</h3>
+                <div class="leaderboard-list" id="leaderboard-guesses">
+                    <p class="no-records">暂无记录</p>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tab-time">
+                <h3>⚡ 最快通关排行榜</h3>
+                <div class="leaderboard-list" id="leaderboard-time">
+                    <p class="no-records">暂无记录</p>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tab-personal">
+                <h3>📊 我的历史最佳</h3>
+                <div class="personal-best" id="personal-best">
+                    <div class="personal-record">
+                        <span class="record-label">最少猜测次数：</span>
+                        <span id="personal-guesses">--</span>
+                    </div>
+                    <div class="personal-record">
+                        <span class="record-label">最快通关时间：</span>
+                        <span id="personal-time">--</span>
+                    </div>
+                    <div class="personal-record">
+                        <span class="record-label">总游戏次数：</span>
+                        <span id="personal-games">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button id="close-leaderboard-btn" class="btn btn-secondary">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="win-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>🎉 恭喜通关！</h2>
+            <div class="win-stats">
+                <p>猜测次数：<span id="win-guesses">0</span> 次</p>
+                <p>用时：<span id="win-time">0</span> 秒</p>
+                <p id="new-record" class="new-record hidden">🏆 新纪录！</p>
+            </div>
+            <div class="modal-buttons">
+                <button id="play-again-btn" class="btn btn-primary">再来一局</button>
+                <button id="show-leaderboard-win-btn" class="btn btn-secondary">查看排行榜</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content settings-content">
+            <h2>⚙️ 数据管理</h2>
+            
+            <div class="settings-section">
+                <h3>清空历史记录</h3>
+                <p class="settings-desc">清除当前游戏中的猜测历史记录</p>
+                <button id="clear-history-btn" class="btn btn-danger">清空历史</button>
+            </div>
+            
+            <div class="settings-section">
+                <h3>清空排行榜</h3>
+                <p class="settings-desc">清除所有排行榜数据（操作不可恢复）</p>
+                <button id="clear-leaderboard-btn" class="btn btn-danger">清空排行榜</button>
+            </div>
+            
+            <div class="settings-section">
+                <h3>操作日志</h3>
+                <div class="log-container" id="log-container">
+                    <p class="no-logs">暂无操作记录</p>
+                </div>
+                <button id="clear-logs-btn" class="btn btn-small btn-secondary">清空日志</button>
+            </div>
+            
+            <div class="modal-buttons">
+                <button id="close-settings-btn" class="btn btn-secondary">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal hidden">
+        <div class="modal-content confirm-content">
+            <h2 id="confirm-title">确认操作</h2>
+            <p id="confirm-message">确定要执行此操作吗？</p>
+            <p id="confirm-warning" class="confirm-warning hidden">⚠️ 此操作不可恢复！</p>
+            <div class="modal-buttons">
+                <button id="confirm-ok-btn" class="btn btn-danger">确定</button>
+                <button id="confirm-cancel-btn" class="btn btn-secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tutorial-modal" class="modal hidden">
+        <div class="modal-content tutorial-content">
+            <h2 id="tutorial-title">🎮 游戏指南</h2>
+            
+            <div class="tutorial-progress">
+                <div class="progress-dots">
+                    <span class="progress-dot active" data-page="0"></span>
+                    <span class="progress-dot" data-page="1"></span>
+                    <span class="progress-dot" data-page="2"></span>
+                    <span class="progress-dot" data-page="3"></span>
+                </div>
+            </div>
+            
+            <div class="tutorial-pages">
+                <div class="tutorial-page active" data-page="0">
+                    <div class="tutorial-icon">🎯</div>
+                    <h3>游戏目标</h3>
+                    <p>系统会随机生成一个 <strong>1 到 100</strong> 之间的神秘数字。</p>
+                    <p>你的任务是在 <strong>7 次猜测</strong> 内猜出这个数字！</p>
+                    <p>每次猜测后，系统会提示你猜大了还是猜小了。</p>
+                </div>
+                
+                <div class="tutorial-page" data-page="1">
+                    <div class="tutorial-icon">💡</div>
+                    <h3>计分规则</h3>
+                    <p><strong>猜测次数越少</strong>，成绩越好！</p>
+                    <p><strong>用时越短</strong>，排名越高！</p>
+                    <p>使用 <strong>提示功能</strong> 会消耗 1 次猜测机会，但可以帮助你缩小范围。</p>
+                    <p>最少可使用 3 次提示。</p>
+                </div>
+                
+                <div class="tutorial-page" data-page="2">
+                    <div class="tutorial-icon">🏆</div>
+                    <h3>排行榜系统</h3>
+                    <p>游戏会记录你的 <strong>最佳成绩</strong>：</p>
+                    <p>• 最少猜测次数排行榜</p>
+                    <p>• 最快通关时间排行榜</p>
+                    <p>所有数据都会保存在本地浏览器中。</p>
+                </div>
+                
+                <div class="tutorial-page" data-page="3">
+                    <div class="tutorial-icon">⚡</div>
+                    <h3>操作技巧</h3>
+                    <p>1️⃣ 使用 <strong>二分法</strong> 可以最快猜中（每次猜中间数）</p>
+                    <p>2️⃣ 注意观察历史记录，避免重复猜测</p>
+                    <p>3️⃣ 遇到困难时可以使用 <strong>提示功能</strong></p>
+                    <p>4️⃣ 祝你好运！🎉</p>
+                </div>
+            </div>
+            
+            <div class="tutorial-footer">
+                <div class="tutorial-checkbox">
+                    <input type="checkbox" id="dont-show-again">
+                    <label for="dont-show-again">不再显示此指南</label>
+                </div>
+                <div class="tutorial-buttons">
+                    <button id="tutorial-prev" class="btn btn-secondary hidden">上一页</button>
+                    <button id="tutorial-next" class="btn btn-primary">下一页</button>
+                    <button id="tutorial-close" class="btn btn-primary hidden">我知道了</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>
