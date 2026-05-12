@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五子棋测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .test-suite {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+        .test-suite h2 {
+            color: #444;
+            margin: 0 0 15px 0;
+            font-size: 1.1rem;
+        }
+        .test-case {
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .test-case.pass {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .test-case.fail {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .test-name {
+            font-weight: 500;
+        }
+        .test-status {
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        .test-case.pass .test-status {
+            color: #28a745;
+        }
+        .test-case.fail .test-status {
+            color: #dc3545;
+        }
+        .summary {
+            margin-top: 25px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 6px;
+        }
+        .summary .stats {
+            display: flex;
+            gap: 20px;
+            font-size: 1.1rem;
+        }
+        .stats .passed { color: #28a745; font-weight: bold; }
+        .stats .failed { color: #dc3545; font-weight: bold; }
+        .stats .total { color: #667eea; font-weight: bold; }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background: #667eea;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        button:hover {
+            background: #5a6fd6;
+        }
+        .error-details {
+            margin-top: 5px;
+            padding: 5px 10px;
+            background: #fff3cd;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>五子棋游戏单元测试</h1>
+        
+        <div id="test-results"></div>
+        
+        <div class="summary">
+            <div id="summary-stats" class="stats"></div>
+            <button onclick="runAllTests()">重新运行所有测试</button>
+        </div>
+    </div>
+
+    <script src="../js/ai.js"></script>
+    <script src="../js/leaderboard.js"></script>
+    
+    <script>
+        const testResults = document.getElementById('test-results');
+        const summaryStats = document.getElementById('summary-stats');
+        
+        let passedCount = 0;
+        let failedCount = 0;
+        let totalCount = 0;
+
+        function assert(condition, message) {
+            if (!condition) {
+                throw new Error(message || 'Assertion failed');
+            }
+        }
+
+        function createTestSuite(name) {
+            const suite = document.createElement('div');
+            suite.className = 'test-suite';
+            suite.innerHTML = `<h2>${name}</h2>`;
+            testResults.appendChild(suite);
+            return suite;
+        }
+
+        function addTestCase(suite, name, testFn) {
+            totalCount++;
+            const testCase = document.createElement('div');
+            testCase.className = 'test-case';
+            
+            try {
+                testFn();
+                testCase.classList.add('pass');
+                testCase.innerHTML = `
+                    <span class="test-name">${name}</span>
+                    <span class="test-status">✓ 通过</span>
+                `;
+                passedCount++;
+            } catch (error) {
+                testCase.classList.add('fail');
+                testCase.innerHTML = `
+                    <div style="flex: 1;">
+                        <div class="test-name">${name}</div>
+                        <div class="error-details">${error.message}</div>
+                    </div>
+                    <span class="test-status">✗ 失败</span>
+                `;
+                failedCount++;
+            }
+            
+            suite.appendChild(testCase);
+        }
+
+        function updateSummary() {
+            summaryStats.innerHTML = `
+                <span class="total">总计: ${totalCount}</span>
+                <span class="passed">通过: ${passedCount}</span>
+                <span class="failed">失败: ${failedCount}</span>
+            `;
+        }
+
+        function runAllTests() {
+            testResults.innerHTML = '';
+            passedCount = 0;
+            failedCount = 0;
+            totalCount = 0;
+
+            const aiSuite = createTestSuite('AI 模块测试');
+            
+            addTestCase(aiSuite, 'GomokuAI 模块存在', () => {
+                assert(typeof GomokuAI !== 'undefined', 'GomokuAI should be defined');
+            });
+
+            addTestCase(aiSuite, 'AI 能获取候选移动', () => {
+                const board = [];
+                for (let i = 0; i < 15; i++) {
+                    board[i] = [];
+                    for (let j = 0; j < 15; j++) {
+                        board[i][j] = null;
+                    }
+                }
+                board[7][7] = 'black';
+                
+                const move = GomokuAI.getBestMove(board, 'white', 'black', 'easy');
+                assert(move && typeof move.row === 'number' && typeof move.col === 'number', 
+                       'Should return a valid move');
+            });
+
+            addTestCase(aiSuite, 'AI 支持三种难度', () => {
+                assert(typeof GomokuAI.DIFFICULTY !== 'undefined', 'DIFFICULTY should be defined');
+                assert(GomokuAI.DIFFICULTY.easy, 'Easy difficulty should exist');
+                assert(GomokuAI.DIFFICULTY.medium, 'Medium difficulty should exist');
+                assert(GomokuAI.DIFFICULTY.hard, 'Hard difficulty should exist');
+            });
+
+            addTestCase(aiSuite, 'AI 难度配置正确', () => {
+                const easy = GomokuAI.DIFFICULTY.easy;
+                const medium = GomokuAI.DIFFICULTY.medium;
+                const hard = GomokuAI.DIFFICULTY.hard;
+                
+                assert(easy.searchDepth <= medium.searchDepth, 
+                       'Easy search depth should be <= medium');
+                assert(easy.randomness >= medium.randomness, 
+                       'Easy should have more randomness than medium');
+            });
+
+            const leaderboardSuite = createTestSuite('排行榜模块测试');
+            
+            addTestCase(leaderboardSuite, 'Leaderboard 模块存在', () => {
+                assert(typeof Leaderboard !== 'undefined', 'Leaderboard should be defined');
+            });
+
+            addTestCase(leaderboardSuite, '排行榜方法存在', () => {
+                assert(typeof Leaderboard.addRecord === 'function', 'addRecord should be a function');
+                assert(typeof Leaderboard.loadRecords === 'function', 'loadRecords should be a function');
+                assert(typeof Leaderboard.clearRecords === 'function', 'clearRecords should be a function');
+                assert(typeof Leaderboard.clearAllRecords === 'function', 'clearAllRecords should be a function');
+            });
+
+            addTestCase(leaderboardSuite, '可以添加和读取排行榜记录', () => {
+                Leaderboard.clearAllRecords();
+                
+                const records = Leaderboard.addRecord('pvp', 'black', 15);
+                assert(Array.isArray(records), 'Should return an array');
+                assert(records.length > 0, 'Should have records');
+                
+                const loaded = Leaderboard.loadRecords('pvp');
+                assert(Array.isArray(loaded), 'Loaded records should be an array');
+            });
+
+            addTestCase(leaderboardSuite, '排行榜记录按步数排序', () => {
+                Leaderboard.clearAllRecords();
+                
+                Leaderboard.addRecord('pvp', 'black', 20);
+                Leaderboard.addRecord('pvp', 'white', 10);
+                Leaderboard.addRecord('pvp', 'black', 15);
+                
+                const records = Leaderboard.loadRecords('pvp');
+                assert(records[0].moves <= records[1].moves, 'Should be sorted by moves ascending');
+                assert(records[1].moves <= records[2].moves, 'Should be sorted by moves ascending');
+            });
+
+            addTestCase(leaderboardSuite, '可以清空排行榜', () => {
+                Leaderboard.addRecord('pvp', 'black', 20);
+                Leaderboard.addRecord('pve', 'player', 30, 'medium');
+                
+                Leaderboard.clearAllRecords();
+                
+                const pvpRecords = Leaderboard.loadRecords('pvp');
+                const pveRecords = Leaderboard.loadRecords('pve');
+                
+                assert(pvpRecords.length === 0, 'PVP records should be empty');
+                assert(pveRecords.length === 0, 'PVE records should be empty');
+            });
+
+            addTestCase(leaderboardSuite, '排行榜有最大记录限制', () => {
+                Leaderboard.clearAllRecords();
+                
+                for (let i = 0; i < 15; i++) {
+                    Leaderboard.addRecord('pvp', 'black', i + 5);
+                }
+                
+                const records = Leaderboard.loadRecords('pvp');
+                assert(records.length <= 10, 'Should have at most 10 records');
+            });
+
+            const gameLogicSuite = createTestSuite('游戏逻辑测试');
+            
+            addTestCase(gameLogicSuite, '可以创建15x15棋盘', () => {
+                const board = [];
+                for (let i = 0; i < 15; i++) {
+                    board[i] = [];
+                    for (let j = 0; j < 15; j++) {
+                        board[i][j] = null;
+                    }
+                }
+                assert(board.length === 15, 'Board should have 15 rows');
+                assert(board[0].length === 15, 'Board should have 15 columns');
+            });
+
+            addTestCase(gameLogicSuite, '位置验证正确', () => {
+                function isValidPosition(row, col) {
+                    return row >= 0 && row < 15 && col >= 0 && col < 15;
+                }
+                
+                assert(isValidPosition(0, 0) === true, '(0,0) should be valid');
+                assert(isValidPosition(14, 14) === true, '(14,14) should be valid');
+                assert(isValidPosition(15, 15) === false, '(15,15) should be invalid');
+                assert(isValidPosition(-1, 0) === false, '(-1,0) should be invalid');
+            });
+
+            addTestCase(gameLogicSuite, '横向五子检测', () => {
+                const directions = [
+                    { dx: 1, dy: 0 },
+                    { dx: 0, dy: 1 },
+                    { dx: 1, dy: 1 },
+                    { dx: 1, dy: -1 }
+                ];
+                
+                function checkWin(board, row, col) {
+                    const color = board[row][col];
+                    if (!color) return false;
+                    
+                    function countInDirection(startRow, startCol, dx, dy, color) {
+                        let count = 0;
+                        let r = startRow + dx;
+                        let c = startCol + dy;
+                        while (r >= 0 && r < 15 && c >= 0 && c < 15 && board[r][c] === color) {
+                            count++;
+                            r += dx;
+                            c += dy;
+                        }
+                        return count;
+                    }
+                    
+                    for (const dir of directions) {
+                        const count = 1 + 
+                            countInDirection(row, col, dir.dx, dir.dy, color) + 
+                            countInDirection(row, col, -dir.dx, -dir.dy, color);
+                        if (count >= 5) return true;
+                    }
+                    return false;
+                }
+                
+                const board = [];
+                for (let i = 0; i < 15; i++) {
+                    board[i] = [];
+                    for (let j = 0; j < 15; j++) {
+                        board[i][j] = null;
+                    }
+                }
+                
+                for (let i = 0; i < 5; i++) {
+                    board[7][5 + i] = 'black';
+                }
+                
+                assert(checkWin(board, 7, 7) === true, 'Horizontal five should be detected');
+            });
+
+            addTestCase(gameLogicSuite, '纵向五子检测', () => {
+                const directions = [
+                    { dx: 1, dy: 0 },
+                    { dx: 0, dy: 1 },
+                    { dx: 1, dy: 1 },
+                    { dx: 1, dy: -1 }
+                ];
+                
+                function checkWin(board, row, col) {
+                    const color = board[row][col];
+                    if (!color) return false;
+                    
+                    function countInDirection(startRow, startCol, dx, dy, color) {
+                        let count = 0;
+                        let r = startRow + dx;
+                        let c = startCol + dy;
+                        while (r >= 0 && r < 15 && c >= 0 && c < 15 && board[r][c] === color) {
+                            count++;
+                            r += dx;
+                            c += dy;
+                        }
+                        return count;
+                    }
+                    
+                    for (const dir of directions) {
+                        const count = 1 + 
+                            countInDirection(row, col, dir.dx, dir.dy, color) + 
+                            countInDirection(row, col, -dir.dx, -dir.dy, color);
+                        if (count >= 5) return true;
+                    }
+                    return false;
+                }
+                
+                const board = [];
+                for (let i = 0; i < 15; i++) {
+                    board[i] = [];
+                    for (let j = 0; j < 15; j++) {
+                        board[i][j] = null;
+                    }
+                }
+                
+                for (let i = 0; i < 5; i++) {
+                    board[5 + i][7] = 'black';
+                }
+                
+                assert(checkWin(board, 7, 7) === true, 'Vertical five should be detected');
+            });
+
+            addTestCase(gameLogicSuite, '左斜向五子检测', () => {
+                const directions = [
+                    { dx: 1, dy: 0 },
+                    { dx: 0, dy: 1 },
+                    { dx: 1, dy: 1 },
+                    { dx: 1, dy: -1 }
+                ];
+                
+                function checkWin(board, row, col) {
+                    const color = board[row][col];
+                    if (!color) return false;
+                    
+                    function countInDirection(startRow, startCol, dx, dy, color) {
+                        let count = 0;
+                        let r = startRow + dx;
+                        let c = startCol + dy;
+                        while (r >= 0 && r < 15 && c >= 0 && c < 15 && board[r][c] === color) {
+                            count++;
+                            r += dx;
+                            c += dy;
+                        }
+                        return count;
+                    }
+                    
+                    for (const dir of directions) {
+                        const count = 1 + 
+                            countInDirection(row, col, dir.dx, dir.dy, color) + 
+                            countInDirection(row, col, -dir.dx, -dir.dy, color);
+                        if (count >= 5) return true;
+                    }
+                    return false;
+                }
+                
+                const board = [];
+                for (let i = 0; i < 15; i++) {
+                    board[i] = [];
+                    for (let j = 0; j < 15; j++) {
+                        board[i][j] = null;
+                    }
+                }
+                
+                for (let i = 0; i < 5; i++) {
+                    board[5 + i][5 + i] = 'black';
+                }
+                
+                assert(checkWin(board, 7, 7) === true, 'Diagonal (\\) five should be detected');
+            });
+
+            addTestCase(gameLogicSuite, '右斜向五子检测', () => {
+                const directions = [
+                    { dx: 1, dy: 0 },
+                    { dx: 0, dy: 1 },
+                    { dx: 1, dy: 1 },
+                    { dx: 1, dy: -1 }
+                ];
+                
+                function checkWin(board, row, col) {
+                    const color = board[row][col];
+                    if (!color) return false;
+                    
+                    function countInDirection(startRow, startCol, dx, dy, color) {
+                        let count = 0;
+                        let r = startRow + dx;
+                        let c = startCol + dy;
+                        while (r >= 0 && r < 15 && c >= 0 && c < 15 && board[r][c] === color) {
+                            count++;
+                            r += dx;
+                            c += dy;
+                        }
+                        return count;
+                    }
+                    
+                    for (const dir of directions) {
+                        const count = 1 + 
+                            countInDirection(row, col, dir.dx, dir.dy, color) + 
+                            countInDirection(row, col, -dir.dx, -dir.dy, color);
+                        if (count >= 5) return true;
+                    }
+                    return false;
+                }
+                
+                const board = [];
+                for (let i = 0; i < 15; i++) {
+                    board[i] = [];
+                    for (let j = 0; j < 15; j++) {
+                        board[i][j] = null;
+                    }
+                }
+                
+                for (let i = 0; i < 5; i++) {
+                    board[5 + i][9 - i] = 'black';
+                }
+                
+                assert(checkWin(board, 7, 7) === true, 'Diagonal (/) five should be detected');
+            });
+
+            addTestCase(gameLogicSuite, '四子不应该触发胜利', () => {
+                const directions = [
+                    { dx: 1, dy: 0 },
+                    { dx: 0, dy: 1 },
+                    { dx: 1, dy: 1 },
+                    { dx: 1, dy: -1 }
+                ];
+                
+                function checkWin(board, row, col) {
+                    const color = board[row][col];
+                    if (!color) return false;
+                    
+                    function countInDirection(startRow, startCol, dx, dy, color) {
+                        let count = 0;
+                        let r = startRow + dx;
+                        let c = startCol + dy;
+                        while (r >= 0 && r < 15 && c >= 0 && c < 15 && board[r][c] === color) {
+                            count++;
+                            r += dx;
+                            c += dy;
+                        }
+                        return count;
+                    }
+                    
+                    for (const dir of directions) {
+                        const count = 1 + 
+                            countInDirection(row, col, dir.dx, dir.dy, color) + 
+                            countInDirection(row, col, -dir.dx, -dir.dy, color);
+                        if (count >= 5) return true;
+                    }
+                    return false;
+                }
+                
+                const board = [];
+                for (let i = 0; i < 15; i++) {
+                    board[i] = [];
+                    for (let j = 0; j < 15; j++) {
+                        board[i][j] = null;
+                    }
+                }
+                
+                for (let i = 0; i < 4; i++) {
+                    board[7][5 + i] = 'black';
+                }
+                
+                assert(checkWin(board, 7, 6) === false, 'Four in a row should not win');
+            });
+
+            const integrationSuite = createTestSuite('集成测试');
+            
+            addTestCase(integrationSuite, 'AI 和排行榜可以协同工作', () => {
+                Leaderboard.clearAllRecords();
+                
+                const board = [];
+                for (let i = 0; i < 15; i++) {
+                    board[i] = [];
+                    for (let j = 0; j < 15; j++) {
+                        board[i][j] = null;
+                    }
+                }
+                
+                board[7][7] = 'black';
+                const move = GomokuAI.getBestMove(board, 'white', 'black', 'medium');
+                
+                assert(move !== null, 'AI should return a move');
+                
+                Leaderboard.addRecord('pve', 'player', 25, 'medium');
+                const records = Leaderboard.loadRecords('pve');
+                
+                assert(records.length === 1, 'Should have one record');
+                assert(records[0].difficulty === 'medium', 'Should have correct difficulty');
+            });
+
+            addTestCase(integrationSuite, '不同模式的排行榜是独立的', () => {
+                Leaderboard.clearAllRecords();
+                
+                Leaderboard.addRecord('pvp', 'black', 15);
+                Leaderboard.addRecord('pve', 'player', 20, 'hard');
+                
+                const pvpRecords = Leaderboard.loadRecords('pvp');
+                const pveRecords = Leaderboard.loadRecords('pve');
+                
+                assert(pvpRecords.length === 1, 'PVP should have 1 record');
+                assert(pveRecords.length === 1, 'PVE should have 1 record');
+                assert(pvpRecords[0].winner === 'black', 'PVP winner should be black');
+                assert(pveRecords[0].winner === 'player', 'PVE winner should be player');
+            });
+
+            updateSummary();
+            console.log(`测试完成: ${passedCount} 通过, ${failedCount} 失败, 总计 ${totalCount}`);
+        }
+
+        runAllTests();
+    </script>
+</body>
+</html>

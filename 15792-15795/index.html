@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>在线五子棋</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>在线五子棋</h1>
+            
+            <div class="game-stats">
+                <div class="stat-item">
+                    <span class="stat-label">当前回合：</span>
+                    <span id="current-player" class="player-indicator black">黑棋</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">步数：</span>
+                    <span id="move-count" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">模式：</span>
+                    <span id="game-mode" class="stat-value">双人对战</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <div class="game-layout">
+                <div class="left-panel">
+                    <div class="mode-selector">
+                        <h3>游戏模式</h3>
+                        <div class="mode-buttons">
+                            <button id="mode-pvp" class="mode-btn active" data-mode="pvp">双人对战</button>
+                            <button id="mode-pve" class="mode-btn" data-mode="pve">人机对战</button>
+                        </div>
+                        <div id="difficulty-select" class="difficulty-select hidden">
+                            <label>电脑难度：</label>
+                            <select id="difficulty">
+                                <option value="easy">简单</option>
+                                <option value="medium">中等</option>
+                                <option value="hard">困难</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="game-controls">
+                        <button id="reset-btn" class="reset-btn">重新开始</button>
+                        <button id="undo-btn" class="undo-btn" disabled>悔棋</button>
+                    </div>
+                </div>
+
+                <div class="center-panel">
+                    <div class="board-container">
+                        <canvas id="game-board"></canvas>
+                    </div>
+                </div>
+
+                <div class="right-panel">
+                    <div class="leaderboard">
+                        <h3>🏆 排行榜</h3>
+                        <div class="leaderboard-tabs">
+                            <button class="tab-btn active" data-tab="pvp">双人</button>
+                            <button class="tab-btn" data-tab="pve">人机</button>
+                        </div>
+                        <div id="leaderboard-pvp" class="leaderboard-content">
+                            <p class="empty-text">暂无记录</p>
+                        </div>
+                        <div id="leaderboard-pve" class="leaderboard-content hidden">
+                            <p class="empty-text">暂无记录</p>
+                        </div>
+                        <button id="clear-records" class="clear-btn">清空记录</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="game-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="winner-message">游戏结束</h2>
+                <p id="game-stats-info" class="game-stats-info"></p>
+                <div class="modal-buttons">
+                    <button id="modal-reset-btn" class="reset-btn">再来一局</button>
+                    <button id="modal-close-btn" class="close-btn">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/ai.js"></script>
+    <script src="js/leaderboard.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
