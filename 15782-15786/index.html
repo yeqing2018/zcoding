@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翻牌记忆配对小游戏</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="screen" id="homeScreen">
+            <header>
+                <h1>🎴 翻牌记忆配对</h1>
+                <p class="subtitle">挑战你的记忆力，解锁所有关卡！</p>
+            </header>
+            <div class="home-menu">
+                <button class="menu-btn" id="startCampaignBtn">
+                    <span class="menu-icon">🗺️</span>
+                    <span class="menu-text">关卡模式</span>
+                </button>
+                <button class="menu-btn" id="startFreeBtn">
+                    <span class="menu-icon">🎮</span>
+                    <span class="menu-text">自由模式</span>
+                </button>
+                <button class="menu-btn" id="leaderboardBtn">
+                    <span class="menu-icon">🏆</span>
+                    <span class="menu-text">排行榜</span>
+                </button>
+                <div class="player-info">
+                    <div class="player-avatar">👤</div>
+                    <div class="player-details">
+                        <span class="player-name" id="homePlayerName">玩家</span>
+                        <button class="edit-name-btn" id="editNameBtn">✏️</button>
+                    </div>
+                    <div class="player-coins">
+                        <span class="coin-icon">💰</span>
+                        <span id="playerCoins">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen hidden" id="levelScreen">
+            <header>
+                <button class="back-btn" id="levelBackBtn">← 返回</button>
+                <h2>选择关卡</h2>
+                <div class="level-progress">
+                    <span>总星级：</span>
+                    <span id="totalStars">0</span>
+                    <span class="star-icon">⭐</span>
+                </div>
+            </header>
+            <div class="level-grid" id="levelGrid"></div>
+        </div>
+
+        <div class="screen hidden" id="gameScreen">
+            <header>
+                <button class="back-btn" id="gameBackBtn">← 返回</button>
+                <div class="level-header-info">
+                    <span class="level-badge" id="currentLevelBadge">第 1 关</span>
+                    <span class="theme-badge" id="currentThemeBadge">🐶 动物</span>
+                </div>
+            </header>
+            <div class="game-stats-level">
+                <div class="stat-card">
+                    <span class="stat-label">步数</span>
+                    <span class="stat-value" id="moves">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">时间</span>
+                    <span class="stat-value" id="timer">00:00</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">配对</span>
+                    <span class="stat-value"><span id="matches">0</span>/<span id="totalPairs">0</span></span>
+                </div>
+                <div class="stat-card star-card">
+                    <div class="star-progress">
+                        <span class="star-empty">⭐⭐⭐</span>
+                        <span class="star-filled" id="starFilled"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="game-controls-inline">
+                <select id="themeSelect">
+                    <option value="animals">🐶 动物</option>
+                    <option value="fruits">🍎 水果</option>
+                    <option value="emojis">😀 表情</option>
+                </select>
+                <button class="btn btn-secondary" id="restartLevelBtn">🔄 重新开始</button>
+            </div>
+            <main>
+                <div class="game-board" id="gameBoard"></div>
+            </main>
+        </div>
+
+        <div class="screen hidden" id="leaderboardScreen">
+            <header>
+                <button class="back-btn" id="leaderboardBackBtn">← 返回</button>
+                <h2>🏆 排行榜</h2>
+                <button class="refresh-btn" id="refreshLeaderboardBtn">🔄 刷新</button>
+            </header>
+            <div class="leaderboard-tabs">
+                <button class="tab-btn active" data-tab="score">⚡ 本局最高分</button>
+                <button class="tab-btn" data-tab="stars">⭐ 闯关星级</button>
+                <button class="tab-btn" data-tab="speed">⏱️ 最快通关</button>
+            </div>
+            <div class="leaderboard-content">
+                <div class="podium" id="podiumArea"></div>
+                <div class="leaderboard-list" id="leaderboardList"></div>
+            </div>
+        </div>
+
+        <div class="screen hidden" id="freeModeScreen">
+            <header>
+                <button class="back-btn" id="freeBackBtn">← 返回</button>
+                <h2>🎮 自由模式</h2>
+            </header>
+            <div class="free-mode-setup">
+                <div class="setup-group">
+                    <label>难度：</label>
+                    <select id="difficultySelect">
+                        <option value="easy">简单 (4对)</option>
+                        <option value="medium">中等 (6对)</option>
+                        <option value="hard">困难 (8对)</option>
+                    </select>
+                </div>
+                <div class="setup-group">
+                    <label>主题：</label>
+                    <select id="freeThemeSelect">
+                        <option value="animals">🐶 动物</option>
+                        <option value="fruits">🍎 水果</option>
+                        <option value="emojis">😀 表情</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" id="startFreeGameBtn">开始游戏</button>
+            </div>
+            <div class="free-mode-game hidden" id="freeModeGame">
+                <div class="game-stats-level">
+                    <div class="stat-card">
+                        <span class="stat-label">步数</span>
+                        <span class="stat-value" id="freeMoves">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">时间</span>
+                        <span class="stat-value" id="freeTimer">00:00</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">配对</span>
+                        <span class="stat-value"><span id="freeMatches">0</span>/<span id="freeTotalPairs">0</span></span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" id="restartFreeBtn">🔄 重新开始</button>
+                <main>
+                    <div class="game-board" id="freeGameBoard"></div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="winModal">
+        <div class="modal-content modal-win">
+            <div class="win-celebration">🎉</div>
+            <h2>恭喜通关！</h2>
+            <div class="result-stars" id="resultStars">⭐⭐⭐</div>
+            <div class="result-stats">
+                <div class="result-item">
+                    <span class="result-label">总步数</span>
+                    <span class="result-value" id="finalMoves">0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">用时</span>
+                    <span class="result-value" id="finalTime">00:00</span>
+                </div>
+            </div>
+            <div class="reward-section" id="rewardSection">
+                <div class="reward-title">🎁 通关奖励</div>
+                <div class="reward-items" id="rewardItems"></div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="retryBtn">重玩本关</button>
+                <button class="btn btn-primary" id="nextLevelBtn">下一关 →</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="nameModal">
+        <div class="modal-content">
+            <h2>输入昵称</h2>
+            <p>设置你的游戏昵称</p>
+            <input type="text" id="playerNameInput" maxlength="10" placeholder="请输入昵称">
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="saveNameBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="levelLockedModal">
+        <div class="modal-content">
+            <div class="locked-icon">🔒</div>
+            <h2>关卡锁定</h2>
+            <p id="lockedMessage">请先完成前一关卡解锁本关</p>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="closeLockedBtn">知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>
