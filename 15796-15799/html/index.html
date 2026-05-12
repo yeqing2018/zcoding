@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>像素画板绘图工具</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>像素画板绘图工具</h1>
+        </header>
+        
+        <main class="main-content">
+            <aside class="sidebar">
+                <div class="panel">
+                    <h3>画布设置</h3>
+                    <div class="input-group">
+                        <label>宽度 (像素数):</label>
+                        <input type="number" id="canvasWidth" value="32" min="4" max="128">
+                    </div>
+                    <div class="input-group">
+                        <label>高度 (像素数):</label>
+                        <input type="number" id="canvasHeight" value="32" min="4" max="128">
+                    </div>
+                    <div class="input-group">
+                        <label>格子大小 (px):</label>
+                        <input type="number" id="pixelSize" value="20" min="5" max="50">
+                    </div>
+                    <div class="button-group">
+                        <button id="createCanvas" class="btn primary">创建画布</button>
+                        <button id="clearCanvas" class="btn warning">清空画布</button>
+                        <button id="resetCanvas" class="btn danger">重置画布</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>工具</h3>
+                    <div class="tool-group">
+                        <button id="brushTool" class="tool-btn active" title="画笔">
+                            <span class="icon">✏️</span> 画笔
+                        </button>
+                        <button id="eraserTool" class="tool-btn" title="橡皮擦">
+                            <span class="icon">🧹</span> 橡皮擦
+                        </button>
+                    </div>
+                    <div class="tool-group">
+                        <button id="fillTool" class="tool-btn" title="填充工具">
+                            <span class="icon">🪣</span> 填充
+                        </button>
+                        <button id="lineTool" class="tool-btn" title="直线工具">
+                            <span class="icon">📏</span> 直线
+                        </button>
+                    </div>
+                    <div class="tool-group">
+                        <button id="rectTool" class="tool-btn" title="矩形工具">
+                            <span class="icon">⬜</span> 矩形
+                        </button>
+                        <button id="rectFillTool" class="tool-btn" title="实心矩形">
+                            <span class="icon">🟦</span> 实心矩形
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>对称绘制</h3>
+                    <div class="symmetry-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="symmetryX">
+                            <span>左右对称</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="symmetryY">
+                            <span>上下对称</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>图层</h3>
+                    <div class="layers-controls">
+                        <button id="addLayerBtn" class="btn small-btn success">
+                            <span class="icon">➕</span>
+                        </button>
+                        <button id="deleteLayerBtn" class="btn small-btn danger">
+                            <span class="icon">🗑️</span>
+                        </button>
+                        <button id="moveUpBtn" class="btn small-btn">
+                            <span class="icon">⬆️</span>
+                        </button>
+                        <button id="moveDownBtn" class="btn small-btn">
+                            <span class="icon">⬇️</span>
+                        </button>
+                    </div>
+                    <div class="layers-list" id="layersList">
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>颜色</h3>
+                    <div class="color-picker-section">
+                        <label>当前颜色:</label>
+                        <div class="color-display">
+                            <input type="color" id="colorPicker" value="#000000">
+                            <span id="colorValue">#000000</span>
+                        </div>
+                    </div>
+                    <div class="color-palette">
+                        <div class="color-swatch" data-color="#000000" style="background: #000000"></div>
+                        <div class="color-swatch" data-color="#FFFFFF" style="background: #FFFFFF; border: 1px solid #ccc"></div>
+                        <div class="color-swatch" data-color="#FF0000" style="background: #FF0000"></div>
+                        <div class="color-swatch" data-color="#00FF00" style="background: #00FF00"></div>
+                        <div class="color-swatch" data-color="#0000FF" style="background: #0000FF"></div>
+                        <div class="color-swatch" data-color="#FFFF00" style="background: #FFFF00"></div>
+                        <div class="color-swatch" data-color="#FF00FF" style="background: #FF00FF"></div>
+                        <div class="color-swatch" data-color="#00FFFF" style="background: #00FFFF"></div>
+                        <div class="color-swatch" data-color="#FF8800" style="background: #FF8800"></div>
+                        <div class="color-swatch" data-color="#8800FF" style="background: #8800FF"></div>
+                        <div class="color-swatch" data-color="#888888" style="background: #888888"></div>
+                        <div class="color-swatch" data-color="#444444" style="background: #444444"></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>历史</h3>
+                    <div class="button-group">
+                        <button id="undoBtn" class="btn" title="撤销 (Ctrl+Z)">
+                            <span class="icon">↩️</span> 撤销
+                        </button>
+                        <button id="redoBtn" class="btn" title="重做 (Ctrl+Y)">
+                            <span class="icon">↪️</span> 重做
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>导出</h3>
+                    <div class="export-section">
+                        <label>格式:</label>
+                        <select id="exportFormat">
+                            <option value="png">PNG (透明)</option>
+                            <option value="jpg">JPG</option>
+                        </select>
+                        <button id="exportBtn" class="btn success">
+                            <span class="icon">💾</span> 保存图片
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="canvas-area">
+                <div class="canvas-wrapper">
+                    <canvas id="pixelCanvas"></canvas>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+</body>
+</html>
