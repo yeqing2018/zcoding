@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>躲避下落方块 - 高级版</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="score-panel">
+            <div class="score-item">
+                <span class="label">当前分数</span>
+                <span class="value current-score">0</span>
+            </div>
+            <div class="score-item difficulty">
+                <span class="label">难度等级</span>
+                <span class="value level-value">1</span>
+            </div>
+            <div class="score-item combo">
+                <span class="label">连续躲避</span>
+                <span class="value combo-value">0</span>
+            </div>
+            <div class="score-item lives">
+                <span class="label">生命值</span>
+                <span class="value lives-display">❤️❤️❤️</span>
+            </div>
+            <div class="score-item best">
+                <span class="label">最高分</span>
+                <span class="value best-score">0</span>
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <div class="skill-panel">
+                <div class="skill-item" id="skillDash">
+                    <div class="skill-icon">⚡</div>
+                    <div class="skill-info">
+                        <div class="skill-name">冲刺</div>
+                        <div class="skill-cooldown">就绪</div>
+                    </div>
+                    <div class="skill-key">W</div>
+                </div>
+                <div class="skill-item" id="skillShield">
+                    <div class="skill-icon">🛡️</div>
+                    <div class="skill-info">
+                        <div class="skill-name">护盾</div>
+                        <div class="skill-cooldown">就绪</div>
+                    </div>
+                    <div class="skill-key">E</div>
+                </div>
+                <div class="skill-item" id="skillDouble">
+                    <div class="skill-icon">✨</div>
+                    <div class="skill-info">
+                        <div class="skill-name">双倍</div>
+                        <div class="skill-cooldown">就绪</div>
+                    </div>
+                    <div class="skill-key">Q</div>
+                </div>
+            </div>
+            
+            <div class="buff-panel">
+                <div class="buff-item hidden" id="buffShield">
+                    <span>🛡️</span>
+                    <span class="buff-time">0s</span>
+                </div>
+                <div class="buff-item hidden" id="buffDouble">
+                    <span>✨</span>
+                    <span class="buff-time">0s</span>
+                </div>
+                <div class="buff-item hidden" id="buffSlow">
+                    <span>⏰</span>
+                    <span class="buff-time">0s</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-container">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            
+            <div id="startScreen" class="overlay">
+                <div class="overlay-content">
+                    <h1 class="game-title">躲避下落方块</h1>
+                    <div class="game-icon">🎮</div>
+                    
+                    <div class="mode-selection">
+                        <h3>选择模式</h3>
+                        <div class="mode-buttons">
+                            <button class="mode-btn active" data-mode="endless">
+                                <span class="mode-icon">♾️</span>
+                                <span class="mode-name">无尽模式</span>
+                            </button>
+                            <button class="mode-btn" data-mode="level">
+                                <span class="mode-icon">🏆</span>
+                                <span class="mode-name">关卡模式</span>
+                            </button>
+                            <button class="mode-btn" data-mode="daily">
+                                <span class="mode-icon">📅</span>
+                                <span class="mode-name">每日挑战</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="instructions">
+                        <p><span class="key">← →</span> 或 <span class="key">A D</span> 移动</p>
+                        <p><span class="key">W</span> 冲刺 | <span class="key">E</span> 护盾 | <span class="key">Q</span> 双倍分数</p>
+                        <p><span class="key">ESC</span> 暂停 | <span class="key">P</span> 暂停/继续</p>
+                    </div>
+                    
+                    <div class="highest-score-display" id="highestScoreDisplay">
+                        历史最高分: <span id="highScoreValue">0</span>
+                    </div>
+                    
+                    <div class="menu-buttons">
+                        <button class="menu-btn" id="btnAchievements">🏆 成就</button>
+                        <button class="menu-btn" id="btnSkins">🎨 皮肤</button>
+                    </div>
+                    
+                    <p class="start-hint">按任意键或点击开始游戏</p>
+                </div>
+            </div>
+            
+            <div id="pauseScreen" class="overlay hidden">
+                <div class="overlay-content">
+                    <h1 class="pause-title">⏸️ 游戏暂停</h1>
+                    <p class="pause-hint">按 <span class="key">ESC</span> 或 <span class="key">P</span> 继续</p>
+                    <div class="pause-stats">
+                        <div class="stat">当前分数: <span id="pauseScore">0</span></div>
+                        <div class="stat">难度等级: <span id="pauseLevel">1</span></div>
+                    </div>
+                    <button class="menu-btn" id="btnResume">继续游戏</button>
+                    <button class="menu-btn secondary" id="btnMenu">返回菜单</button>
+                </div>
+            </div>
+            
+            <div id="gameOverScreen" class="overlay hidden">
+                <div class="overlay-content">
+                    <h1 class="gameover-title">💥 游戏结束</h1>
+                    <div class="final-result">
+                        <div class="result-item">
+                            <span class="result-label">最终分数</span>
+                            <span class="result-value" id="finalScore">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">达到难度</span>
+                            <span class="result-value" id="finalLevel">1</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">躲避次数</span>
+                            <span class="result-value" id="finalDodges">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">最长存活</span>
+                            <span class="result-value" id="finalTime">0s</span>
+                        </div>
+                        <div class="result-item highlight" id="newRecord" style="display: none;">
+                            🏆 新纪录！
+                        </div>
+                    </div>
+                    <div class="achievement-popup hidden" id="achievementPopup">
+                        <div class="achievement-icon">🏆</div>
+                        <div class="achievement-text">
+                            <div class="achievement-title">成就解锁！</div>
+                            <div class="achievement-name" id="achievementName">无伤害大师</div>
+                        </div>
+                    </div>
+                    <button class="menu-btn" id="btnRestart">再来一局</button>
+                    <button class="menu-btn secondary" id="btnGameOverMenu">返回菜单</button>
+                </div>
+            </div>
+            
+            <div id="levelCompleteScreen" class="overlay hidden">
+                <div class="overlay-content">
+                    <h1 class="level-complete-title">🎉 关卡完成！</h1>
+                    <div class="level-info">
+                        <div class="result-item">
+                            <span class="result-label">关卡</span>
+                            <span class="result-value" id="completedLevel">1</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">获得分数</span>
+                            <span class="result-value" id="levelScore">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">目标分数</span>
+                            <span class="result-value" id="targetScore">100</span>
+                        </div>
+                    </div>
+                    <button class="menu-btn" id="btnNextLevel">下一关</button>
+                    <button class="menu-btn secondary" id="btnLevelMenu">返回菜单</button>
+                </div>
+            </div>
+            
+            <div id="achievementsScreen" class="overlay hidden">
+                <div class="overlay-content">
+                    <h1 class="section-title">🏆 成就系统</h1>
+                    <div class="achievements-list" id="achievementsList"></div>
+                    <button class="menu-btn" id="btnCloseAchievements">返回</button>
+                </div>
+            </div>
+            
+            <div id="skinsScreen" class="overlay hidden">
+                <div class="overlay-content">
+                    <h1 class="section-title">🎨 皮肤选择</h1>
+                    <div class="skins-list" id="skinsList"></div>
+                    <button class="menu-btn" id="btnCloseSkins">返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/game.js"></script>
+</body>
+</html>
