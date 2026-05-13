@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>扫雷小游戏</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="game-container">
+            <h1>🎮 扫雷小游戏</h1>
+            
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="game">游戏</button>
+                    <button class="tab-btn" data-tab="custom">自定义</button>
+                    <button class="tab-btn" data-tab="leaderboard">排行榜</button>
+                </div>
+            </div>
+            
+            <div class="tab-content active" id="tab-game">
+                <div class="difficulty-selector">
+                    <label for="difficulty">难度选择:</label>
+                    <select id="difficulty" class="difficulty-dropdown">
+                        <option value="easy" selected>简单 (9×9, 10雷)</option>
+                        <option value="medium">中等 (16×16, 40雷)</option>
+                        <option value="hard">困难 (16×30, 99雷)</option>
+                    </select>
+                </div>
+                
+                <div class="game-settings">
+                    <div class="toggle-container">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="safe-mode" class="toggle-input">
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-text">误触保护</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="game-info">
+                    <div class="info-box mine-box">
+                        <span class="info-label">💣 剩余地雷</span>
+                        <span id="mine-count" class="info-value">10</span>
+                    </div>
+                    <button id="restart-btn" class="restart-btn">🔄 重新开始</button>
+                    <div class="info-box timer-box">
+                        <span class="info-label">⏱️ 用时</span>
+                        <span id="timer" class="info-value">00:00</span>
+                    </div>
+                </div>
+                
+                <div id="game-board" class="game-board"></div>
+                
+                <div class="instructions">
+                    <p>左键点击翻开 | 右键标记 | 双击数字快速展开</p>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tab-custom">
+                <div class="custom-form">
+                    <h3>自定义棋盘设置</h3>
+                    <div class="form-group">
+                        <label for="custom-rows">行数 (5-30)</label>
+                        <input type="number" id="custom-rows" min="5" max="30" value="9">
+                    </div>
+                    <div class="form-group">
+                        <label for="custom-cols">列数 (5-50)</label>
+                        <input type="number" id="custom-cols" min="5" max="50" value="9">
+                    </div>
+                    <div class="form-group">
+                        <label for="custom-mines">地雷数量</label>
+                        <input type="number" id="custom-mines" min="1" value="10">
+                        <span class="hint" id="mines-hint">建议: 1-80</span>
+                    </div>
+                    <button id="start-custom" class="custom-btn">开始游戏</button>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tab-leaderboard">
+                <div class="leaderboard">
+                    <div class="leaderboard-tabs">
+                        <button class="lb-tab active" data-diff="easy">简单</button>
+                        <button class="lb-tab" data-diff="medium">中等</button>
+                        <button class="lb-tab" data-diff="hard">困难</button>
+                    </div>
+                    <div class="leaderboard-list" id="leaderboard-list">
+                        <p class="empty-message">暂无记录，快去挑战吧！</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="safe-mode-toast" class="toast">
+            <span>⚠️ 误触保护: 该位置可能有雷</span>
+        </div>
+    </div>
+    
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal">
+            <div id="modal-icon" class="modal-icon">🎉</div>
+            <h2 id="modal-title">游戏胜利!</h2>
+            <p id="modal-message">恭喜你完成了游戏!</p>
+            <div class="modal-stats">
+                <span id="modal-time">用时: 00:00</span>
+            </div>
+            <button id="modal-close" class="modal-btn">再来一局</button>
+        </div>
+    </div>
+    
+    <script src="js/game.js"></script>
+</body>
+</html>
