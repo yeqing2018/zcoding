@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>滑块拼图游戏 - 高级版</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="modeSelector" class="mode-selector">
+            <h1>🎮 滑块拼图游戏</h1>
+            <p class="subtitle">选择游戏模式开始挑战</p>
+            <div class="mode-grid">
+                <button class="mode-card" data-mode="classic">
+                    <span class="mode-icon">🎯</span>
+                    <span class="mode-title">经典模式</span>
+                    <span class="mode-desc">自由挑战，无时间限制</span>
+                </button>
+                <button class="mode-card" data-mode="timed">
+                    <span class="mode-icon">⏱️</span>
+                    <span class="mode-title">限时挑战</span>
+                    <span class="mode-desc">在限定时间内完成拼图</span>
+                </button>
+                <button class="mode-card" data-mode="daily">
+                    <span class="mode-icon">📅</span>
+                    <span class="mode-title">每日一题</span>
+                    <span class="mode-desc">每天一个特殊关卡</span>
+                </button>
+                <button class="mode-card" data-mode="level">
+                    <span class="mode-icon">🏆</span>
+                    <span class="mode-title">闯关模式</span>
+                    <span class="mode-desc">递进难度，挑战极限</span>
+                </button>
+                <button class="mode-card" data-mode="battle">
+                    <span class="mode-icon">⚔️</span>
+                    <span class="mode-title">双人对战</span>
+                    <span class="mode-desc">同屏比拼，谁与争锋</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="gameArea" class="game-area hidden">
+            <div class="game-header">
+                <button id="backBtn" class="back-btn">← 返回</button>
+                <h2 id="gameTitle">经典模式</h2>
+                <div class="game-level" id="gameLevel"></div>
+            </div>
+
+            <div class="single-player-game" id="singlePlayerGame">
+                <div class="difficulty-selector">
+                    <span class="label">选择难度：</span>
+                    <button class="difficulty-btn active" data-size="3">3×3</button>
+                    <button class="difficulty-btn" data-size="4">4×4</button>
+                    <button class="difficulty-btn" data-size="5">5×5</button>
+                </div>
+
+                <div class="game-info">
+                    <div class="info-item">
+                        <span class="label">步数：</span>
+                        <span id="steps" class="value">0</span>
+                    </div>
+                    <div class="info-item" id="timerContainer">
+                        <span class="label">用时：</span>
+                        <span id="timer" class="value">00:00</span>
+                    </div>
+                    <div class="info-item countdown" id="countdownContainer" style="display: none;">
+                        <span class="label">剩余：</span>
+                        <span id="countdown" class="value">03:00</span>
+                    </div>
+                </div>
+
+                <div class="game-board" id="gameBoard"></div>
+
+                <div class="power-ups">
+                    <button class="power-up-btn" id="hintBtn" title="提示">
+                        <span class="power-up-icon">💡</span>
+                        <span class="power-up-name">提示</span>
+                        <span class="power-up-count" id="hintCount">3</span>
+                    </button>
+                    <button class="power-up-btn" id="refreshBtn" title="刷新">
+                        <span class="power-up-icon">🔄</span>
+                        <span class="power-up-name">刷新</span>
+                        <span class="power-up-count" id="refreshCount">2</span>
+                    </button>
+                    <button class="power-up-btn" id="freezeBtn" title="时间冻结">
+                        <span class="power-up-icon">❄️</span>
+                        <span class="power-up-name">冻结</span>
+                        <span class="power-up-count" id="freezeCount">2</span>
+                    </button>
+                    <button class="power-up-btn" id="skipBtn" title="跳过">
+                        <span class="power-up-icon">⏭️</span>
+                        <span class="power-up-name">跳过</span>
+                        <span class="power-up-count" id="skipCount">1</span>
+                    </button>
+                </div>
+
+                <div class="controls">
+                    <button id="resetBtn" class="btn">重新开始</button>
+                    <button id="undoBtn" class="btn">撤销</button>
+                    <button id="leaderboardBtn" class="btn">排行榜</button>
+                </div>
+            </div>
+
+            <div class="battle-game hidden" id="battleGame">
+                <div class="battle-container">
+                    <div class="player-area player1">
+                        <h3 class="player-title">玩家 1</h3>
+                        <div class="game-info">
+                            <div class="info-item">
+                                <span class="label">步数：</span>
+                                <span id="p1Steps" class="value">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">用时：</span>
+                                <span id="p1Timer" class="value">00:00</span>
+                            </div>
+                        </div>
+                        <div class="game-board" id="p1Board"></div>
+                        <div class="player-status" id="p1Status"></div>
+                    </div>
+                    <div class="vs-divider">VS</div>
+                    <div class="player-area player2">
+                        <h3 class="player-title">玩家 2</h3>
+                        <div class="game-info">
+                            <div class="info-item">
+                                <span class="label">步数：</span>
+                                <span id="p2Steps" class="value">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">用时：</span>
+                                <span id="p2Timer" class="value">00:00</span>
+                            </div>
+                        </div>
+                        <div class="game-board" id="p2Board"></div>
+                        <div class="player-status" id="p2Status"></div>
+                    </div>
+                </div>
+                <div class="battle-controls">
+                    <button id="battleStartBtn" class="btn">开始对战</button>
+                    <button id="battleResetBtn" class="btn">重新对战</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="winModal">
+            <div class="modal-content">
+                <h2 id="winTitle">🎉 恭喜你赢了！</h2>
+                <p id="winMessage"></p>
+                <button id="playAgainBtn" class="btn">再玩一次</button>
+                <button id="winBackBtn" class="btn btn-secondary">返回模式选择</button>
+            </div>
+        </div>
+
+        <div class="modal" id="loseModal">
+            <div class="modal-content">
+                <h2 id="loseTitle">⏰ 时间到！</h2>
+                <p id="loseMessage">很遗憾，时间用完了</p>
+                <button id="tryAgainBtn" class="btn">再试一次</button>
+                <button id="loseBackBtn" class="btn btn-secondary">返回模式选择</button>
+            </div>
+        </div>
+
+        <div class="modal" id="leaderboardModal">
+            <div class="modal-content">
+                <h2>🏆 排行榜</h2>
+                <div class="leaderboard-tabs">
+                    <button class="leaderboard-tab active" data-size="3">3×3</button>
+                    <button class="leaderboard-tab" data-size="4">4×4</button>
+                    <button class="leaderboard-tab" data-size="5">5×5</button>
+                </div>
+                <div class="leaderboard-list" id="leaderboardList"></div>
+                <button id="closeLeaderboardBtn" class="btn">关闭</button>
+            </div>
+        </div>
+
+        <div class="modal" id="levelCompleteModal">
+            <div class="modal-content">
+                <h2>🎊 关卡完成！</h2>
+                <p id="levelCompleteMessage"></p>
+                <button id="nextLevelBtn" class="btn">下一关</button>
+                <button id="levelBackBtn" class="btn btn-secondary">返回模式选择</button>
+            </div>
+        </div>
+
+        <div class="modal" id="battleResultModal">
+            <div class="modal-content">
+                <h2 id="battleResultTitle">🏅 对战结束</h2>
+                <p id="battleResultMessage"></p>
+                <button id="battleAgainBtn" class="btn">再来一局</button>
+                <button id="battleBackBtn" class="btn btn-secondary">返回模式选择</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>
