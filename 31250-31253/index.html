@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>颜色匹配挑战游戏 VIP版</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="light-effect light-1"></div>
+    <div class="light-effect light-2"></div>
+    <div class="light-effect light-3"></div>
+
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🎨 颜色匹配挑战</h1>
+            <div class="theme-switcher">
+                <button id="simpleTheme" class="theme-btn active" title="简约版">
+                    <span class="theme-icon">◻️</span>
+                </button>
+                <button id="dreamyTheme" class="theme-btn" title="梦幻版">
+                    <span class="theme-icon">✨</span>
+                </button>
+                <button id="statsBtn" class="theme-btn" title="数据统计">
+                    <span class="theme-icon">📊</span>
+                </button>
+                <button id="rankingBtn" class="theme-btn" title="排行榜">
+                    <span class="theme-icon">🏆</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-label">得分</span>
+                <span id="score" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">关卡</span>
+                <span id="level" class="stat-value">1/30</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">阶段</span>
+                <span id="stage" class="stat-value">1</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">玩法</span>
+                <span id="gameMode" class="stat-value">基础</span>
+            </div>
+            <div class="stat-item timer-container">
+                <span class="stat-label">剩余时间</span>
+                <span id="timer" class="stat-value">45s</span>
+            </div>
+        </div>
+
+        <div class="game-info">
+            <p id="gameHint" class="game-hint">点击开始游戏</p>
+        </div>
+
+        <div class="game-area">
+            <div class="target-section">
+                <h3>目标颜色</h3>
+                <div id="targetContainer" class="target-container">
+                </div>
+                <p id="targetColorName" class="color-name">请开始游戏</p>
+                <div id="memoryTimer" class="memory-timer hidden">
+                    <span id="memoryCountdown">3</span>
+                </div>
+            </div>
+
+            <div class="choices-section">
+                <h3 id="choicesTitle">选择匹配的颜色</h3>
+                <div id="choices" class="choices-grid">
+                </div>
+            </div>
+        </div>
+
+        <div class="selected-indicator" id="selectedIndicator">
+            <span>已选择: </span>
+            <span id="selectedCount">0</span>/2
+        </div>
+
+        <div class="message-area">
+            <p id="message" class="message"></p>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn" class="btn-primary">开始游戏</button>
+            <button id="hintBtn" class="btn-secondary" disabled>💡 提示</button>
+            <button id="resetBtn" class="btn-secondary">重新开始</button>
+        </div>
+
+        <div class="effects-container" id="effectsContainer"></div>
+
+        <div class="modal" id="statsModal">
+            <div class="modal-content">
+                <h2>📊 数据统计</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-card-label">总通关次数</span>
+                        <span class="stat-card-value" id="totalGames">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-label">最高正确率</span>
+                        <span class="stat-card-value" id="bestAccuracy">0%</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-label">最短通关用时</span>
+                        <span class="stat-card-value" id="bestTime">--</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-label">总提示使用次数</span>
+                        <span class="stat-card-value" id="totalHints">0</span>
+                    </div>
+                </div>
+                <button class="btn-primary modal-close">关闭</button>
+            </div>
+        </div>
+
+        <div class="modal" id="rankingModal">
+            <div class="modal-content">
+                <h2>🏆 排行榜</h2>
+                <div class="ranking-list" id="rankingList">
+                    <p class="empty-ranking">暂无记录</p>
+                </div>
+                <div class="ranking-controls">
+                    <button id="resetRankingBtn" class="btn-secondary">重置排行榜</button>
+                    <button class="btn-primary modal-close">关闭</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal game-over-modal" id="gameOverModal">
+            <div class="modal-content">
+                <h2>🎮 游戏结束</h2>
+                <div class="final-stats">
+                    <p class="final-score">最终得分: <span id="finalScore">0</span></p>
+                    <p class="final-level">到达关卡: <span id="finalLevel">1</span></p>
+                    <p class="final-accuracy">正确率: <span id="finalAccuracy">0%</span></p>
+                    <p class="final-time">用时: <span id="finalTime">0s</span></p>
+                </div>
+                <div class="modal-buttons">
+                    <button id="playAgainBtn" class="btn-primary">再玩一次</button>
+                    <button class="btn-secondary modal-close">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>

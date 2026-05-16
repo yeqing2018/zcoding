@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字打字测速器 - 专业版</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>文字打字测速器 <span class="badge">专业版</span></h1>
+        </header>
+
+        <main>
+            <!-- 导航标签 -->
+            <div class="nav-tabs">
+                <button class="tab-btn active" data-tab="typing">打字练习</button>
+                <button class="tab-btn" data-tab="practice">练习模式</button>
+                <button class="tab-btn" data-tab="rank">段位等级</button>
+                <button class="tab-btn" data-tab="leaderboard">排行榜</button>
+                <button class="tab-btn" data-tab="pk">双人PK</button>
+                <button class="tab-btn" data-tab="mistakes">错题本</button>
+                <button class="tab-btn" data-tab="analysis">数据分析</button>
+                <button class="tab-btn" data-tab="custom">自定义文本</button>
+                <button class="tab-btn" data-tab="history">历史记录</button>
+                <button class="tab-btn" data-tab="stats">速度曲线</button>
+            </div>
+
+            <!-- 打字练习标签页 -->
+            <div class="tab-content active" id="typing-tab">
+                <!-- 设置区域 -->
+                <div class="settings-panel">
+                    <div class="setting-group">
+                        <label for="duration-select">测试时长：</label>
+                        <select id="duration-select">
+                            <option value="30">30 秒</option>
+                            <option value="60" selected>60 秒</option>
+                            <option value="90">90 秒</option>
+                            <option value="120">120 秒</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label for="difficulty-select">难度档位：</label>
+                        <select id="difficulty-select">
+                            <option value="easy">简单</option>
+                            <option value="normal" selected>普通</option>
+                            <option value="hard">困难</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label for="category-select">素材分类：</label>
+                        <select id="category-select">
+                            <option value="all">全部</option>
+                            <option value="prose">散文随笔</option>
+                            <option value="poetry">古诗词</option>
+                            <option value="english">英文经典</option>
+                            <option value="code">程序员代码</option>
+                            <option value="internet">网络文案</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 统计面板 -->
+                <div class="stats-panel">
+                    <div class="stat-item">
+                        <span class="stat-label">剩余时间</span>
+                        <span id="time-remaining" class="stat-value">60</span>
+                        <span class="stat-unit">秒</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">打字速度</span>
+                        <span id="wpm" class="stat-value">0</span>
+                        <span class="stat-unit">WPM</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">每分钟字数</span>
+                        <span id="cpm" class="stat-value">0</span>
+                        <span class="stat-unit">字/分</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">正确率</span>
+                        <span id="accuracy" class="stat-value">100</span>
+                        <span class="stat-unit">%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">错字数量</span>
+                        <span id="errors" class="stat-value">0</span>
+                        <span class="stat-unit">个</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">退格次数</span>
+                        <span id="backspace-count" class="stat-value">0</span>
+                        <span class="stat-unit">次</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">有效输入</span>
+                        <span id="effective-input" class="stat-value">0</span>
+                        <span class="stat-unit">%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">已打字数</span>
+                        <span id="typed" class="stat-value">0</span>
+                        <span class="stat-unit">字</span>
+                    </div>
+                </div>
+
+                <!-- 进度条 -->
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                    <span class="progress-text" id="progress-text">0%</span>
+                </div>
+
+                <!-- 文本显示区域 -->
+                <div class="text-display" id="text-display"></div>
+
+                <!-- 输入区域 -->
+                <div class="input-container">
+                    <textarea id="input-area" placeholder="点击\"开始测试\"按钮，然后在此处开始打字..." disabled></textarea>
+                </div>
+
+                <!-- 控制按钮 -->
+                <div class="controls">
+                    <button id="start-btn" class="btn btn-primary">开始测试</button>
+                    <button id="reset-btn" class="btn btn-secondary" disabled>重置</button>
+                    <button id="end-btn" class="btn btn-danger" disabled>结束测试</button>
+                </div>
+            </div>
+
+            <!-- 自定义文本标签页 -->
+            <div class="tab-content" id="custom-tab">
+                <div class="custom-panel">
+                    <h3>导入自定义文本</h3>
+                    <p class="hint">粘贴您想要练习的文章或文本，点击"使用此文本"按钮开始练习。</p>
+                    <textarea id="custom-text-input" placeholder="在此粘贴您的自定义文本..."></textarea>
+                    <div class="custom-controls">
+                        <button id="use-custom-btn" class="btn btn-primary">使用此文本</button>
+                        <button id="clear-custom-btn" class="btn btn-secondary">清空</button>
+                        <button id="load-sample-btn" class="btn btn-info">加载示例</button>
+                    </div>
+                    <div class="custom-info" id="custom-info">
+                        <span>当前自定义文本：</span>
+                        <span id="custom-status">未设置</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 历史记录标签页 -->
+            <div class="tab-content" id="history-tab">
+                <div class="history-panel">
+                    <div class="history-header">
+                        <h3>历史成绩记录</h3>
+                        <button id="clear-history-btn" class="btn btn-danger btn-small">清空记录</button>
+                    </div>
+                    <div class="history-list" id="history-list">
+                        <div class="empty-state">
+                            <p>暂无历史记录</p>
+                            <p class="sub-text">完成打字测试后，成绩将自动保存到这里</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 速度曲线标签页 -->
+            <div class="tab-content" id="stats-tab">
+                <div class="speed-chart-panel">
+                    <h3>速度曲线走势图</h3>
+                    <div class="chart-controls">
+                        <select id="chart-history-select">
+                            <option value="">选择历史记录查看</option>
+                        </select>
+                        <button id="refresh-chart-btn" class="btn btn-secondary btn-small">刷新</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="speed-chart" width="800" height="300"></canvas>
+                    </div>
+                    <div class="chart-stats" id="chart-stats">
+                        <p>开始测试后，这里将显示实时速度曲线</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 练习模式标签页 -->
+            <div class="tab-content" id="practice-tab">
+                <div class="practice-panel">
+                    <h3>练习模式 - 无时间限制</h3>
+                    <p class="hint">此模式下没有时间限制，只练习指法，不计入成绩统计。</p>
+                    
+                    <div class="settings-panel">
+                        <div class="setting-group">
+                            <label for="practice-difficulty">难度档位：</label>
+                            <select id="practice-difficulty">
+                                <option value="easy">简单</option>
+                                <option value="normal" selected>普通</option>
+                                <option value="hard">困难</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label for="practice-category">素材分类：</label>
+                            <select id="practice-category">
+                                <option value="all">全部</option>
+                                <option value="prose">散文随笔</option>
+                                <option value="poetry">古诗词</option>
+                                <option value="english">英文经典</option>
+                                <option value="code">程序员代码</option>
+                                <option value="internet">网络文案</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="stats-panel">
+                        <div class="stat-item">
+                            <span class="stat-label">练习时长</span>
+                            <span id="practice-time" class="stat-value">0</span>
+                            <span class="stat-unit">秒</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">正确字数</span>
+                            <span id="practice-correct" class="stat-value">0</span>
+                            <span class="stat-unit">字</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">错误字数</span>
+                            <span id="practice-errors" class="stat-value">0</span>
+                            <span class="stat-unit">字</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">已打字数</span>
+                            <span id="practice-typed" class="stat-value">0</span>
+                            <span class="stat-unit">字</span>
+                        </div>
+                    </div>
+
+                    <div class="text-display" id="practice-text-display"></div>
+
+                    <div class="input-container">
+                        <textarea id="practice-input-area" placeholder="点击\"开始练习\"按钮，然后在此处开始打字..." disabled></textarea>
+                    </div>
+
+                    <div class="controls">
+                        <button id="practice-start-btn" class="btn btn-primary">开始练习</button>
+                        <button id="practice-reset-btn" class="btn btn-secondary" disabled>重置</button>
+                        <button id="practice-next-btn" class="btn btn-info" disabled>下一段</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段位等级标签页 -->
+            <div class="tab-content" id="rank-tab">
+                <div class="rank-panel">
+                    <h3>我的段位等级</h3>
+                    <div class="rank-card" id="rank-card">
+                        <div class="rank-icon" id="rank-icon">🥉</div>
+                        <div class="rank-info">
+                            <div class="rank-title" id="rank-title">新手</div>
+                            <div class="rank-desc" id="rank-desc">刚开始打字之旅</div>
+                        </div>
+                    </div>
+                    
+                    <div class="rank-progress">
+                        <div class="rank-progress-bar">
+                            <div class="rank-progress-fill" id="rank-progress-fill"></div>
+                        </div>
+                        <div class="rank-progress-text" id="rank-progress-text">经验值: 0 / 100</div>
+                    </div>
+
+                    <div class="rank-levels">
+                        <h4>段位等级说明</h4>
+                        <div class="rank-list">
+                            <div class="rank-item">
+                                <span class="rank-badge novice">🥉 新手</span>
+                                <span class="rank-req">累计打字 0-499 字</span>
+                            </div>
+                            <div class="rank-item">
+                                <span class="rank-badge beginner">🥈 入门</span>
+                                <span class="rank-req">累计打字 500-2999 字</span>
+                            </div>
+                            <div class="rank-item">
+                                <span class="rank-badge proficient">🥇 熟练</span>
+                                <span class="rank-req">累计打字 3000-9999 字</span>
+                            </div>
+                            <div class="rank-item">
+                                <span class="rank-badge master">👑 大神</span>
+                                <span class="rank-req">累计打字 10000+ 字</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rank-stats">
+                        <h4>练习统计</h4>
+                        <div class="rank-stats-grid">
+                            <div class="rank-stat-item">
+                                <span class="rank-stat-label">总练习次数</span>
+                                <span class="rank-stat-value" id="rank-total-sessions">0</span>
+                            </div>
+                            <div class="rank-stat-item">
+                                <span class="rank-stat-label">累计打字</span>
+                                <span class="rank-stat-value" id="rank-total-chars">0</span>
+                                <span class="rank-stat-unit">字</span>
+                            </div>
+                            <div class="rank-stat-item">
+                                <span class="rank-stat-label">最高速度</span>
+                                <span class="rank-stat-value" id="rank-max-cpm">0</span>
+                                <span class="rank-stat-unit">字/分</span>
+                            </div>
+                            <div class="rank-stat-item">
+                                <span class="rank-stat-label">平均正确率</span>
+                                <span class="rank-stat-value" id="rank-avg-accuracy">0</span>
+                                <span class="rank-stat-unit">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 排行榜标签页 -->
+            <div class="tab-content" id="leaderboard-tab">
+                <div class="leaderboard-panel">
+                    <h3>全区排行榜</h3>
+                    <div class="leaderboard-tabs">
+                        <button class="leaderboard-tab-btn active" data-period="daily">日榜</button>
+                        <button class="leaderboard-tab-btn" data-period="weekly">周榜</button>
+                        <button class="leaderboard-tab-btn" data-period="all">总榜</button>
+                    </div>
+                    
+                    <div class="leaderboard-content" id="leaderboard-content">
+                        <div class="empty-state">
+                            <p>暂无排行数据</p>
+                            <p class="sub-text">完成打字测试后将自动计入排行榜</p>
+                        </div>
+                    </div>
+                    
+                    <div class="leaderboard-mock-hint">
+                        <button id="generate-mock-leaderboard" class="btn btn-info btn-small">生成模拟排行数据</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 双人PK标签页 -->
+            <div class="tab-content" id="pk-tab">
+                <div class="pk-panel">
+                    <h3>双人在线PK - 打字竞速</h3>
+                    <p class="hint">模拟对战模式：本地双人轮流操作，或与AI对手进行竞速对决</p>
+                    
+                    <div class="pk-settings">
+                        <div class="setting-group">
+                            <label for="pk-mode">对战模式：</label>
+                            <select id="pk-mode">
+                                <option value="ai">人机对战</option>
+                                <option value="local">本地双人</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label for="pk-duration">比赛时长：</label>
+                            <select id="pk-duration">
+                                <option value="30">30 秒</option>
+                                <option value="60" selected>60 秒</option>
+                                <option value="90">90 秒</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label for="pk-difficulty">难度档位：</label>
+                            <select id="pk-difficulty">
+                                <option value="easy">简单</option>
+                                <option value="normal" selected>普通</option>
+                                <option value="hard">困难</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="pk-arena">
+                        <div class="pk-player player1">
+                            <div class="pk-player-header">
+                                <span class="pk-player-name" id="pk-player1-name">玩家</span>
+                                <span class="pk-player-score" id="pk-player1-score">0</span>
+                            </div>
+                            <div class="pk-progress">
+                                <div class="pk-progress-bar player1" id="pk-progress1"></div>
+                            </div>
+                            <div class="pk-stats">
+                                <span>速度: <span id="pk-player1-cpm">0</span> 字/分</span>
+                                <span>正确率: <span id="pk-player1-accuracy">100</span>%</span>
+                            </div>
+                            <div class="pk-input" id="pk-player1-input">
+                                <textarea id="pk-input1" placeholder="玩家输入区域" disabled></textarea>
+                            </div>
+                        </div>
+
+                        <div class="pk-vs">VS</div>
+
+                        <div class="pk-player player2">
+                            <div class="pk-player-header">
+                                <span class="pk-player-name" id="pk-player2-name">AI对手</span>
+                                <span class="pk-player-score" id="pk-player2-score">0</span>
+                            </div>
+                            <div class="pk-progress">
+                                <div class="pk-progress-bar player2" id="pk-progress2"></div>
+                            </div>
+                            <div class="pk-stats">
+                                <span>速度: <span id="pk-player2-cpm">0</span> 字/分</span>
+                                <span>正确率: <span id="pk-player2-accuracy">100</span>%</span>
+                            </div>
+                            <div class="pk-input">
+                                <div class="pk-ai-progress" id="pk-ai-progress">AI输入区域</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-display pk-text-display" id="pk-text-display"></div>
+
+                    <div class="controls">
+                        <button id="pk-start-btn" class="btn btn-primary">开始PK</button>
+                        <button id="pk-reset-btn" class="btn btn-secondary" disabled>重置</button>
+                    </div>
+
+                    <div id="pk-result-modal" class="modal">
+                        <div class="modal-content">
+                            <h2 id="pk-result-title">PK结束！</h2>
+                            <div class="pk-result-winner" id="pk-result-winner">🎉 玩家获胜！</div>
+                            <div class="pk-result-stats">
+                                <div class="pk-result-player">
+                                    <div class="pk-result-name">玩家</div>
+                                    <div class="pk-result-value" id="pk-result-player1">0 字/分</div>
+                                </div>
+                                <div class="pk-result-player">
+                                    <div class="pk-result-name" id="pk-result-player2-name">AI对手</div>
+                                    <div class="pk-result-value" id="pk-result-player2">0 字/分</div>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button id="pk-restart-btn" class="btn btn-primary">再来一局</button>
+                                <button id="pk-close-btn" class="btn btn-secondary">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 错题本标签页 -->
+            <div class="tab-content" id="mistakes-tab">
+                <div class="mistakes-panel">
+                    <h3>我的错题本</h3>
+                    <p class="hint">智能收录易错字，生成专属错题本进行专项练习</p>
+                    
+                    <div class="mistakes-header">
+                        <div class="mistakes-stats">
+                            <div class="mistake-stat">
+                                <span class="mistake-stat-label">收录错字</span>
+                                <span class="mistake-stat-value" id="mistake-total">0</span>
+                            </div>
+                            <div class="mistake-stat">
+                                <span class="mistake-stat-label">已掌握</span>
+                                <span class="mistake-stat-value" id="mistake-mastered">0</span>
+                            </div>
+                        </div>
+                        <div class="mistakes-actions">
+                            <button id="practice-mistakes-btn" class="btn btn-primary btn-small">专项练习</button>
+                            <button id="clear-mistakes-btn" class="btn btn-danger btn-small">清空错题</button>
+                        </div>
+                    </div>
+
+                    <div class="mistakes-list" id="mistakes-list">
+                        <div class="empty-state">
+                            <p>暂无错题记录</p>
+                            <p class="sub-text">完成打字测试后，易错字将自动收录到这里</p>
+                        </div>
+                    </div>
+
+                    <div id="mistakes-practice-modal" class="modal">
+                        <div class="modal-content">
+                            <h2>错题专项练习</h2>
+                            <p class="hint">针对易错字进行专项练习</p>
+                            
+                            <div class="stats-panel">
+                                <div class="stat-item">
+                                    <span class="stat-label">正确</span>
+                                    <span id="mistake-practice-correct" class="stat-value">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">错误</span>
+                                    <span id="mistake-practice-wrong" class="stat-value">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">剩余</span>
+                                    <span id="mistake-practice-remaining" class="stat-value">0</span>
+                                </div>
+                            </div>
+
+                            <div class="mistake-practice-display">
+                                <div class="mistake-practice-char" id="mistake-practice-target">字</div>
+                            </div>
+
+                            <div class="input-container">
+                                <input type="text" id="mistake-practice-input" placeholder="输入上面的字..." disabled>
+                            </div>
+
+                            <div class="modal-actions">
+                                <button id="mistake-practice-close-btn" class="btn btn-secondary">结束练习</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据分析标签页 -->
+            <div class="tab-content" id="analysis-tab">
+                <div class="analysis-panel">
+                    <h3>精准数据分析</h3>
+                    <p class="hint">击键速度、平均间隔、惯用错键等详细统计</p>
+                    
+                    <div class="analysis-grid">
+                        <div class="analysis-card">
+                            <h4>击键速度分析</h4>
+                            <div class="analysis-stats-grid">
+                                <div class="analysis-stat">
+                                    <span class="analysis-stat-label">平均击键速度</span>
+                                    <span class="analysis-stat-value" id="avg-keystroke-speed">0</span>
+                                    <span class="analysis-stat-unit">ms/键</span>
+                                </div>
+                                <div class="analysis-stat">
+                                    <span class="analysis-stat-label">最快击键</span>
+                                    <span class="analysis-stat-value" id="fastest-keystroke">0</span>
+                                    <span class="analysis-stat-unit">ms</span>
+                                </div>
+                                <div class="analysis-stat">
+                                    <span class="analysis-stat-label">最慢击键</span>
+                                    <span class="analysis-stat-value" id="slowest-keystroke">0</span>
+                                    <span class="analysis-stat-unit">ms</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="analysis-card">
+                            <h4>间隔时间分析</h4>
+                            <div class="analysis-stats-grid">
+                                <div class="analysis-stat">
+                                    <span class="analysis-stat-label">平均间隔</span>
+                                    <span class="analysis-stat-value" id="avg-interval">0</span>
+                                    <span class="analysis-stat-unit">ms</span>
+                                </div>
+                                <div class="analysis-stat">
+                                    <span class="analysis-stat-label">最短间隔</span>
+                                    <span class="analysis-stat-value" id="min-interval">0</span>
+                                    <span class="analysis-stat-unit">ms</span>
+                                </div>
+                                <div class="analysis-stat">
+                                    <span class="analysis-stat-label">最长间隔</span>
+                                    <span class="analysis-stat-value" id="max-interval">0</span>
+                                    <span class="analysis-stat-unit">ms</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="analysis-card">
+                            <h4>惯用错键统计</h4>
+                            <div class="mistakes-list analysis-mistakes" id="analysis-mistakes">
+                                <div class="empty-state small">
+                                    <p>暂无错键数据</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="analysis-card">
+                            <h4>综合评分</h4>
+                            <div class="composite-score">
+                                <div class="score-circle">
+                                    <span class="score-value" id="composite-score">0</span>
+                                </div>
+                                <div class="score-legend">
+                                    <div class="score-item"><span class="score-color speed"></span> 速度</div>
+                                    <div class="score-item"><span class="score-color accuracy"></span> 准确率</div>
+                                    <div class="score-item"><span class="score-color consistency"></span> 稳定性</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-refresh">
+                        <button id="refresh-analysis-btn" class="btn btn-primary">刷新数据分析</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 结算弹窗 -->
+        <div id="result-modal" class="modal">
+            <div class="modal-content">
+                <h2>测试完成！</h2>
+                <div class="result-stats">
+                    <div class="result-item">
+                        <span class="result-label">打字速度</span>
+                        <span id="result-wpm" class="result-value">0 WPM</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">每分钟字数</span>
+                        <span id="result-cpm" class="result-value">0 字/分</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">正确率</span>
+                        <span id="result-accuracy" class="result-value">100%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">总字数</span>
+                        <span id="result-total" class="result-value">0 字</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">正确字数</span>
+                        <span id="result-correct" class="result-value">0 字</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">错字数量</span>
+                        <span id="result-errors" class="result-value">0 个</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">退格次数</span>
+                        <span id="result-backspace" class="result-value">0 次</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">有效输入率</span>
+                        <span id="result-effective" class="result-value">0%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">测试时长</span>
+                        <span id="result-duration" class="result-value">0 秒</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">素材分类</span>
+                        <span id="result-category" class="result-value">未知</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="restart-btn" class="btn btn-primary">再来一次</button>
+                    <button id="view-history-btn" class="btn btn-info">查看历史</button>
+                    <button id="close-modal-btn" class="btn btn-secondary">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>
