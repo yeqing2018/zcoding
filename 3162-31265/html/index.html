@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机抽签摇号工具 - 专业版</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div id="app" class="app-container layout-center">
+        <header class="app-header">
+            <h1 class="app-title">随机抽签摇号工具</h1>
+            <div class="header-actions">
+                <button id="toggleSettingsBtn" class="btn-icon" title="设置">⚙️</button>
+                <button id="toggleHistoryBtn" class="btn-icon" title="历史记录">📋</button>
+                <button id="lockBtn" class="btn-icon" title="锁定">🔓</button>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <aside id="groupsPanel" class="groups-panel">
+                <div class="panel-header">
+                    <h3>抽签分组</h3>
+                    <button id="addGroupBtn" class="btn btn-small btn-primary">+ 新增组</button>
+                </div>
+                <div id="groupsList" class="groups-list">
+                </div>
+                <div class="panel-footer">
+                    <button id="batchImportBtn" class="btn btn-small btn-secondary">批量导入</button>
+                    <button id="batchResetBtn" class="btn btn-small btn-secondary">批量重置</button>
+                </div>
+            </aside>
+
+            <section class="draw-area">
+                <div id="currentGroupHeader" class="current-group-header">
+                    <h2 id="currentGroupName">默认分组</h2>
+                    <div class="group-settings">
+                        <select id="drawMode" class="form-control">
+                            <option value="random">普通随机抽签</option>
+                            <option value="weighted">加权抽签</option>
+                            <option value="sequence">顺序抽签</option>
+                        </select>
+                        <div class="win-count-setting">
+                            <label>中签数：</label>
+                            <input type="number" id="winCount" class="form-control small" value="1" min="1">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="resultDisplay" class="result-display">
+                    <span class="placeholder">等待抽签</span>
+                </div>
+
+                <div class="draw-stats">
+                    <span>总候选数：<span id="totalCount">0</span></span>
+                    <span>中签数：<span id="winCountDisplay">1</span></span>
+                    <span>回避数：<span id="avoidCount">0</span></span>
+                </div>
+
+                <div class="draw-controls">
+                    <button id="startBtn" class="btn btn-primary btn-large">开始抽签</button>
+                    <button id="clearBtn" class="btn btn-secondary">清空输入</button>
+                    <button id="resetBtn" class="btn btn-danger">重置</button>
+                </div>
+            </section>
+
+            <aside id="inputPanel" class="input-panel">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="candidates">候选名单</button>
+                    <button class="tab-btn" data-tab="avoid">回避名单</button>
+                    <button class="tab-btn" data-tab="weight">权重设置</button>
+                </div>
+
+                <div class="tab-content active" data-tab-content="candidates">
+                    <div class="toolbar">
+                        <button id="importExcelBtn" class="btn btn-small btn-secondary">导入Excel</button>
+                        <label class="btn btn-small btn-secondary">
+                            批量粘贴
+                            <input type="file" id="pasteFile" accept=".txt" hidden>
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="filterDuplicates"> 过滤重复
+                        </label>
+                    </div>
+                    <textarea id="candidates" placeholder="请输入候选内容，支持逗号或换行分隔"></textarea>
+                    <div class="count-info">
+                        候选数：<span id="candidatesCount">0</span>
+                    </div>
+                </div>
+
+                <div class="tab-content" data-tab-content="avoid">
+                    <div class="toolbar">
+                        <button id="clearAvoidBtn" class="btn btn-small btn-secondary">清空回避</button>
+                    </div>
+                    <textarea id="avoidList" placeholder="请输入回避对象，支持逗号或换行分隔"></textarea>
+                    <div class="count-info">
+                        回避数：<span id="avoidListCount">0</span>
+                    </div>
+                </div>
+
+                <div class="tab-content" data-tab-content="weight">
+                    <div id="weightList" class="weight-list">
+                        <p class="empty-tip">请先在候选名单中添加内容</p>
+                    </div>
+                </div>
+
+                <input type="file" id="excelFile" accept=".xlsx,.xls" hidden>
+            </aside>
+        </main>
+
+        <div id="settingsPanel" class="settings-panel hidden">
+            <div class="panel-header">
+                <h3>系统设置</h3>
+                <button id="closeSettingsBtn" class="btn-icon">✕</button>
+            </div>
+            
+            <div class="settings-content">
+                <div class="setting-group">
+                    <h4>界面设置</h4>
+                    <div class="setting-item">
+                        <label>布局模式</label>
+                        <select id="layoutMode" class="form-control">
+                            <option value="center">居中布局</option>
+                            <option value="split">分栏布局</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>背景颜色</label>
+                        <input type="color" id="bgColor" class="form-control color-picker" value="#2c3e50">
+                    </div>
+                    <div class="setting-item">
+                        <label>背景图片</label>
+                        <input type="file" id="bgImage" accept="image/*" class="form-control">
+                        <button id="clearBgImage" class="btn btn-small">清除背景图</button>
+                    </div>
+                    <div class="setting-item">
+                        <label>字体颜色</label>
+                        <input type="color" id="fontColor" class="form-control color-picker" value="#ecf0f1">
+                    </div>
+                    <div class="setting-item">
+                        <label>字体样式</label>
+                        <select id="fontFamily" class="form-control">
+                            <option value="'Microsoft YaHei', 'PingFang SC', sans-serif">微软雅黑</option>
+                            <option value="SimSun, serif">宋体</option>
+                            <option value="SimHei, sans-serif">黑体</option>
+                            <option value="KaiTi, serif">楷体</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>摇号区域大小</label>
+                        <input type="range" id="resultSize" min="80" max="200" value="100" class="form-control">
+                        <span id="resultSizeValue">100%</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>动画效果</label>
+                        <select id="animationEffect" class="form-control">
+                            <option value="blink">闪烁</option>
+                            <option value="slide">滑动</option>
+                            <option value="fade">淡入淡出</option>
+                            <option value="zoom">缩放</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h4>抽签设置</h4>
+                    <div class="setting-item">
+                        <label>摇号速度</label>
+                        <select id="rollSpeed" class="form-control">
+                            <option value="slow">慢</option>
+                            <option value="medium" selected>中</option>
+                            <option value="fast">快</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>滚动时长（秒）</label>
+                        <input type="range" id="rollDuration" min="1" max="10" value="3" class="form-control">
+                        <span id="rollDurationValue">3秒</span>
+                    </div>
+                    <div class="setting-item">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="titleBlink" checked> 网页标题闪烁提醒
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="popupAlert" checked> 弹窗提醒
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h4>显示设置</h4>
+                    <div class="setting-item">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="showButtons" checked> 显示操作按钮
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="showGroups" checked> 显示分组面板
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="showInput" checked> 显示输入面板
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h4>快捷键</h4>
+                    <div class="setting-item">
+                        <label>开始/停止</label>
+                        <input type="text" id="shortcutStart" class="form-control small" value="Space" readonly>
+                    </div>
+                    <div class="setting-item">
+                        <label>重置</label>
+                        <input type="text" id="shortcutReset" class="form-control small" value="R" readonly>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h4>数据管理</h4>
+                    <div class="setting-item">
+                        <button id="exportDataBtn" class="btn btn-secondary">导出备份</button>
+                        <label class="btn btn-secondary">
+                            导入恢复
+                            <input type="file" id="importDataBtn" accept=".json" hidden>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="historyPanel" class="history-panel hidden">
+            <div class="panel-header">
+                <h3>历史记录</h3>
+                <button id="closeHistoryBtn" class="btn-icon">✕</button>
+            </div>
+            <div class="history-controls">
+                <button id="clearHistoryBtn" class="btn btn-small btn-danger">清空历史</button>
+                <button id="exportHistoryBtn" class="btn btn-small btn-secondary">导出历史</button>
+            </div>
+            <div id="historyList" class="history-list">
+                <p class="empty-tip">暂无抽签记录</p>
+            </div>
+        </div>
+
+        <div id="lockModal" class="modal hidden">
+            <div class="modal-content">
+                <h3 id="lockModalTitle">设置锁定密码</h3>
+                <input type="password" id="lockPassword" class="form-control" placeholder="请输入密码">
+                <input type="password" id="lockPasswordConfirm" class="form-control" placeholder="请确认密码">
+                <div class="modal-actions">
+                    <button id="cancelLockBtn" class="btn btn-secondary">取消</button>
+                    <button id="confirmLockBtn" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="excelModal" class="modal hidden">
+            <div class="modal-content">
+                <h3>选择Excel列</h3>
+                <select id="excelColumnSelect" class="form-control">
+                </select>
+                <div class="modal-actions">
+                    <button id="cancelExcelBtn" class="btn btn-secondary">取消</button>
+                    <button id="confirmExcelBtn" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>
