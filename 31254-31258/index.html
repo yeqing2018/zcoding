@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小球弹跳物理模拟器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <h1>小球弹跳物理模拟器</h1>
+        
+        <div class="main-layout">
+            <div class="left-panel">
+                <div class="panel-section">
+                    <h3>小球设置</h3>
+                    <div class="control-group">
+                        <label>小球数量：<span id="ballCountValue">1</span></label>
+                        <input type="range" id="ballCount" min="1" max="10" value="1">
+                    </div>
+                    <div class="control-group">
+                        <label>小球材质：</label>
+                        <select id="materialSelect">
+                            <option value="rubber">橡胶 (e=0.85)</option>
+                            <option value="wood">木质 (e=0.65)</option>
+                            <option value="metal">金属 (e=0.35)</option>
+                            <option value="glass">玻璃 (e=0.90)</option>
+                            <option value="clay">黏土 (e=0.10)</option>
+                        </select>
+                    </div>
+                    <button id="addBallBtn" class="btn btn-secondary">添加小球</button>
+                    <button id="clearBallsBtn" class="btn btn-danger">清除所有</button>
+                </div>
+
+                <div class="panel-section">
+                    <h3>物理参数</h3>
+                    <div class="control-group">
+                        <label>重力大小：<span id="gravityValue">1800</span></label>
+                        <input type="range" id="gravity" min="200" max="4000" value="1800">
+                    </div>
+                    <div class="control-group">
+                        <label>重力角度：<span id="gravityAngleValue">90</span>°</label>
+                        <input type="range" id="gravityAngle" min="0" max="360" value="90">
+                    </div>
+                    <div class="control-group">
+                        <label>空气阻力：<span id="airResistanceValue">0.00</span></label>
+                        <input type="range" id="airResistance" min="0" max="5" step="0.1" value="0">
+                    </div>
+                    <div class="control-group">
+                        <label>地面摩擦：<span id="frictionValue">0.02</span></label>
+                        <input type="range" id="friction" min="0" max="1" step="0.01" value="0.02">
+                    </div>
+                    <div class="control-group">
+                        <label>碰撞模式：</label>
+                        <select id="collisionMode">
+                            <option value="elastic">完全弹性碰撞</option>
+                            <option value="inelastic">非弹性碰撞</option>
+                            <option value="plastic">塑性碰撞</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>场景模式</h3>
+                    <div class="control-group">
+                        <label>初始速度：<span id="initialVelocityValue">0</span></label>
+                        <input type="range" id="initialVelocity" min="0" max="1000" value="0">
+                    </div>
+                    <div class="control-group">
+                        <label>抛出角度：<span id="launchAngleValue">0</span>°</label>
+                        <input type="range" id="launchAngle" min="0" max="360" value="0">
+                    </div>
+                    <div class="control-group">
+                        <label>场景预设：</label>
+                        <select id="scenePreset">
+                            <option value="freefall">自由落体</option>
+                            <option value="projectile">斜抛运动</option>
+                            <option value="obstacles">障碍物场景</option>
+                            <option value="custom">自定义</option>
+                        </select>
+                    </div>
+                    <div class="control-group checkbox-group">
+                        <label><input type="checkbox" id="showObstacles" checked> 显示障碍物</label>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>控制</h3>
+                    <div class="button-group">
+                        <button id="startBtn" class="btn btn-start">启动</button>
+                        <button id="pauseBtn" class="btn btn-pause" disabled>暂停</button>
+                        <button id="resetBtn" class="btn btn-reset">重置</button>
+                    </div>
+                    <div class="button-group">
+                        <button id="addObstacleBtn" class="btn btn-secondary">添加障碍物</button>
+                        <button id="clearObstaclesBtn" class="btn btn-danger">清除障碍物</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="center-panel">
+                <div class="info-panel">
+                    <div class="info-item">
+                        <span class="label">小球数量：</span>
+                        <span id="ballCountDisplay">1</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">总弹跳次数：</span>
+                        <span id="totalBounceCount">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">总碰撞次数：</span>
+                        <span id="totalCollisionCount">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">模拟时长：</span>
+                        <span id="simulationTime">0.00</span> 秒
+                    </div>
+                </div>
+
+                <div class="simulation-area">
+                    <canvas id="canvas" width="700" height="550"></canvas>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="panel-section data-panel">
+                    <h3>物理数据分析</h3>
+                    <div class="ball-selector">
+                        <label>选择小球：</label>
+                        <select id="selectedBall">
+                            <option value="0">小球 1</option>
+                        </select>
+                    </div>
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <span class="data-label">位置 X:</span>
+                            <span id="dataPosX">0.00</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">位置 Y:</span>
+                            <span id="dataPosY">0.00</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">速度 Vx:</span>
+                            <span id="dataVelX">0.00</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">速度 Vy:</span>
+                            <span id="dataVelY">0.00</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">速度大小:</span>
+                            <span id="dataSpeed">0.00</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">加速度:</span>
+                            <span id="dataAccel">0.00</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">动量 p:</span>
+                            <span id="dataMomentum">0.00</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">动能 Ek:</span>
+                            <span id="dataKE">0.00</span>
+                        </div>
+                        <div class="data-item full-width">
+                            <span class="data-label">上次碰撞能量损失:</span>
+                            <span id="dataEnergyLoss">0.00%</span>
+                        </div>
+                        <div class="data-item full-width">
+                            <span class="data-label">弹跳次数:</span>
+                            <span id="dataBounceCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>材质参数说明</h3>
+                    <div class="material-info">
+                        <div class="material-item">
+                            <span class="dot rubber"></span>
+                            <span>橡胶: e=0.85, μ=0.8</span>
+                        </div>
+                        <div class="material-item">
+                            <span class="dot wood"></span>
+                            <span>木质: e=0.65, μ=0.4</span>
+                        </div>
+                        <div class="material-item">
+                            <span class="dot metal"></span>
+                            <span>金属: e=0.35, μ=0.3</span>
+                        </div>
+                        <div class="material-item">
+                            <span class="dot glass"></span>
+                            <span>玻璃: e=0.90, μ=0.2</span>
+                        </div>
+                        <div class="material-item">
+                            <span class="dot clay"></span>
+                            <span>黏土: e=0.10, μ=0.9</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
