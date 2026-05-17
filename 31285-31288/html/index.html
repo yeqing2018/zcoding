@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>极速滑雪挑战</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="gameUI">
+            <div class="ui-top">
+                <div class="score-panel">
+                    <span class="label">得分</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="speed-panel">
+                    <span class="label">速度</span>
+                    <span id="speed">0</span> km/h
+                </div>
+                <div class="lives-panel">
+                    <span class="label">生命</span>
+                    <span id="lives">❤️❤️❤️</span>
+                </div>
+                <div class="distance-panel">
+                    <span class="label">距离</span>
+                    <span id="distance">0</span> m
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div id="progressFill"></div>
+            </div>
+        </div>
+
+        <div id="startScreen" class="overlay hidden">
+            <h1>⛷️ 极速滑雪挑战</h1>
+            <p class="subtitle">从山顶飞驰而下，挑战极限速度！</p>
+            <div class="instructions">
+                <h3>操作说明</h3>
+                <p>⬅️ ➡️ 方向键 / A D：左右转向</p>
+                <p>⬇️ 方向键 / S：减速</p>
+                <p>空格：抓板特技</p>
+                <p>Q：360度旋转 | W：后空翻 | E：720度旋转</p>
+                <p>ESC：暂停 | Backspace：返回</p>
+                <p>躲避障碍物，穿越旗门获得加分</p>
+                <p>安全滑到山脚完成比赛！</p>
+            </div>
+            <button id="startBtn">开始挑战</button>
+        </div>
+
+        <div id="gameOverScreen" class="overlay hidden">
+            <h1 id="gameOverTitle">比赛结束</h1>
+            <div class="result">
+                <p>最终得分：<span id="finalScore">0</span></p>
+                <p>滑行距离：<span id="finalDistance">0</span> m</p>
+                <p>最高速度：<span id="finalSpeed">0</span> km/h</p>
+            </div>
+            <button id="restartBtn">返回主菜单</button>
+        </div>
+
+        <div id="pauseScreen" class="overlay hidden">
+            <h1>⏸️ 游戏暂停</h1>
+            <p class="subtitle">按 ESC 继续游戏</p>
+            <button id="resumeBtn">继续游戏</button>
+        </div>
+    </div>
+
+    <script src="../js/game.js"></script>
+</body>
+</html>

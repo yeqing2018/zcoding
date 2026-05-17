@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多功能计算器 Pro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="theme-light" id="appBody">
+    <div class="custom-bg" id="customBg"></div>
+    <div class="calculator-container" id="calcContainer">
+        <header class="header">
+            <h1>多功能计算器 Pro</h1>
+            <div class="header-buttons">
+                <div class="settings-btn" onclick="togglePanel('settingsPanel')">⚙️ 设置</div>
+                <div class="settings-btn" onclick="togglePanel('functionsPanel')">ƒ 函数</div>
+            </div>
+        </header>
+
+        <div class="display-section">
+            <div class="expression-display" id="expressionDisplay"></div>
+            <div class="result-display" id="resultDisplay">0</div>
+            <div class="error-display" id="errorDisplay"></div>
+        </div>
+
+        <div class="batch-input-section">
+            <textarea id="batchInput" placeholder="批量输入表达式，每行一个，例如：&#10;a=10&#10;b=20&#10;a+b&#10;(a*b)/2"></textarea>
+            <div class="batch-buttons">
+                <button class="batch-btn" onclick="executeBatch()">批量执行</button>
+                <button class="batch-btn secondary" onclick="document.getElementById('fileInput').click()">📁 导入文件</button>
+                <input type="file" id="fileInput" accept=".txt" style="display:none" onchange="importFromFile(event)">
+            </div>
+        </div>
+
+        <div class="buttons-section">
+            <div class="function-buttons">
+                <button class="btn func-btn" onclick="appendInput('(')">(</button>
+                <button class="btn func-btn" onclick="appendInput(')')">)</button>
+                <button class="btn func-btn" onclick="appendInput('%')">%</button>
+                <button class="btn func-btn" onclick="appendInput('^')">x^y</button>
+                <button class="btn func-btn" onclick="appendFunction('sqrt')">√</button>
+                <button class="btn func-btn" onclick="appendFunction('abs')">|x|</button>
+                <button class="btn func-btn" onclick="appendFunction('sin')">sin</button>
+                <button class="btn func-btn" onclick="appendFunction('cos')">cos</button>
+                <button class="btn func-btn" onclick="appendFunction('tan')">tan</button>
+                <button class="btn func-btn" onclick="appendFunction('log')">ln</button>
+                <button class="btn func-btn" onclick="appendFunction('log10')">log</button>
+                <button class="btn func-btn" onclick="appendFunction('exp')">e^x</button>
+                <button class="btn func-btn" onclick="undoInput()">⌫ 回退</button>
+                <button class="btn func-btn" onclick="repeatLast()">↻ 重复</button>
+                <button class="btn func-btn" onclick="clearAll()">C 清空</button>
+            </div>
+
+            <div class="main-buttons">
+                <div class="number-pad">
+                    <button class="btn num-btn" onclick="appendInput('7')">7</button>
+                    <button class="btn num-btn" onclick="appendInput('8')">8</button>
+                    <button class="btn num-btn" onclick="appendInput('9')">9</button>
+                    <button class="btn num-btn" onclick="appendInput('4')">4</button>
+                    <button class="btn num-btn" onclick="appendInput('5')">5</button>
+                    <button class="btn num-btn" onclick="appendInput('6')">6</button>
+                    <button class="btn num-btn" onclick="appendInput('1')">1</button>
+                    <button class="btn num-btn" onclick="appendInput('2')">2</button>
+                    <button class="btn num-btn" onclick="appendInput('3')">3</button>
+                    <button class="btn num-btn" onclick="appendInput('0')">0</button>
+                    <button class="btn num-btn" onclick="appendInput('.')">.</button>
+                    <button class="btn num-btn" onclick="toggleSign()">±</button>
+                </div>
+                <div class="operator-pad">
+                    <button class="btn op-btn" onclick="appendInput('+')">+</button>
+                    <button class="btn op-btn" onclick="appendInput('-')">−</button>
+                    <button class="btn op-btn" onclick="appendInput('*')">×</button>
+                    <button class="btn op-btn" onclick="appendInput('/')">÷</button>
+                    <button class="btn op-btn" onclick="calculate()">=</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="extra-section">
+            <button class="tab-btn active" onclick="switchTab('variables')">变量</button>
+            <button class="tab-btn" onclick="switchTab('history')">历史</button>
+            <button class="tab-btn" onclick="switchTab('currency')">汇率</button>
+            <button class="tab-btn" onclick="switchTab('shortcuts')">快捷键</button>
+        </div>
+
+        <div class="tab-content" id="variablesTab">
+            <div class="variables-list" id="variablesList">
+                <div class="empty-hint">暂无变量，使用形如 a=10 进行赋值</div>
+            </div>
+        </div>
+
+        <div class="tab-content hidden" id="historyTab">
+            <div class="history-toolbar">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="selectAllHistory" onchange="toggleSelectAllHistory()">
+                    全选
+                </label>
+                <button class="small-btn danger" onclick="deleteSelectedHistory()">删除选中</button>
+                <button class="small-btn" onclick="exportHistory()">📤 导出</button>
+                <button class="small-btn" onclick="repeatAllHistory()">🔁 全部重算</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <div class="empty-hint">暂无计算记录</div>
+            </div>
+        </div>
+
+        <div class="tab-content hidden" id="currencyTab">
+            <div class="currency-converter">
+                <div class="currency-row">
+                    <input type="number" id="currencyAmount" value="1" min="0" step="0.01">
+                    <select id="currencyFrom">
+                        <option value="CNY">人民币 (CNY)</option>
+                        <option value="USD">美元 (USD)</option>
+                        <option value="EUR">欧元 (EUR)</option>
+                        <option value="JPY">日元 (JPY)</option>
+                        <option value="GBP">英镑 (GBP)</option>
+                        <option value="HKD">港币 (HKD)</option>
+                        <option value="AUD">澳元 (AUD)</option>
+                        <option value="CAD">加元 (CAD)</option>
+                    </select>
+                </div>
+                <div class="currency-arrow">↓</div>
+                <div class="currency-row">
+                    <input type="text" id="currencyResult" readonly>
+                    <select id="currencyTo">
+                        <option value="USD">美元 (USD)</option>
+                        <option value="CNY">人民币 (CNY)</option>
+                        <option value="EUR">欧元 (EUR)</option>
+                        <option value="JPY">日元 (JPY)</option>
+                        <option value="GBP">英镑 (GBP)</option>
+                        <option value="HKD">港币 (HKD)</option>
+                        <option value="AUD">澳元 (AUD)</option>
+                        <option value="CAD">加元 (CAD)</option>
+                    </select>
+                </div>
+                <button class="convert-btn" onclick="convertCurrency()">转换</button>
+                <div class="rate-info" id="rateInfo"></div>
+            </div>
+        </div>
+
+        <div class="tab-content hidden" id="shortcutsTab">
+            <div class="shortcuts-list">
+                <div class="shortcut-item"><kbd>0-9</kbd><span>输入数字</span></div>
+                <div class="shortcut-item"><kbd>+ - * /</kbd><span>输入运算符</span></div>
+                <div class="shortcut-item"><kbd>Enter / =</kbd><span>计算结果</span></div>
+                <div class="shortcut-item"><kbd>Backspace</kbd><span>回退</span></div>
+                <div class="shortcut-item"><kbd>Esc</kbd><span>清空</span></div>
+                <div class="shortcut-item"><kbd>( )</kbd><span>输入括号</span></div>
+                <div class="shortcut-item"><kbd>Ctrl+Z</kbd><span id="shortcutUndo">撤销上一步</span></div>
+                <div class="shortcut-item"><kbd>Ctrl+Y</kbd><span id="shortcutRedo">重做</span></div>
+                <div class="shortcut-item"><kbd>F5</kbd><span id="shortcutRepeat">重复上次计算</span></div>
+            </div>
+            <div class="custom-shortcuts">
+                <h4>自定义快捷键</h4>
+                <div class="shortcut-config">
+                    <label>撤销: <input type="text" id="customUndo" placeholder="Ctrl+Z" onchange="saveCustomShortcut('undo', this.value)"></label>
+                    <label>重复: <input type="text" id="customRepeat" placeholder="F5" onchange="saveCustomShortcut('repeat', this.value)"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-overlay hidden" id="panelOverlay" onclick="closeAllPanels()"></div>
+
+        <div class="side-panel hidden" id="settingsPanel">
+            <div class="panel-header">
+                <h3>⚙️ 设置</h3>
+                <button class="close-btn" onclick="togglePanel('settingsPanel')">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="setting-section">
+                    <h4>预设皮肤</h4>
+                    <div class="skin-presets">
+                        <div class="skin-preset" onclick="applyPresetSkin('minimal')" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);" title="简约">简约</div>
+                        <div class="skin-preset" onclick="applyPresetSkin('business')" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);" title="商务">商务</div>
+                        <div class="skin-preset" onclick="applyPresetSkin('retro')" style="background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);" title="复古">复古</div>
+                        <div class="skin-preset" onclick="applyPresetSkin('cool')" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" title="炫酷">炫酷</div>
+                        <div class="skin-preset" onclick="applyPresetSkin('nature')" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);" title="自然">自然</div>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h4>自定义背景</h4>
+                    <div class="setting-item">
+                        <label>上传背景图片:</label>
+                        <input type="file" id="bgImageInput" accept="image/*" onchange="uploadBackground(event)">
+                    </div>
+                    <div class="setting-item">
+                        <label>背景颜色:</label>
+                        <input type="color" id="bgColorPicker" value="#667eea" onchange="changeBgColor(this.value)">
+                    </div>
+                    <div class="setting-item">
+                        <label>背景透明度:</label>
+                        <input type="range" id="bgOpacity" min="0" max="100" value="100" onchange="changeBgOpacity(this.value)">
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h4>字体设置</h4>
+                    <div class="setting-item">
+                        <label>字体大小: <span id="fontSizeValue">16px</span></label>
+                        <input type="range" id="fontSizeSlider" min="12" max="28" value="16" onchange="changeFontSize(this.value)">
+                    </div>
+                    <div class="setting-item">
+                        <label>字体颜色:</label>
+                        <input type="color" id="textColorPicker" value="#333333" onchange="changeTextColor(this.value)">
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h4>按钮设置</h4>
+                    <div class="setting-item">
+                        <label>按钮大小: <span id="btnSizeValue">16px</span></label>
+                        <input type="range" id="btnSizeSlider" min="12" max="24" value="16" onchange="changeBtnSize(this.value)">
+                    </div>
+                    <div class="setting-item">
+                        <label>按钮圆角: <span id="btnRadiusValue">10px</span></label>
+                        <input type="range" id="btnRadiusSlider" min="0" max="20" value="10" onchange="changeBtnRadius(this.value)">
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h4>通用设置</h4>
+                    <div class="setting-item">
+                        <label>小数位数:</label>
+                        <select id="decimalPlaces" onchange="changeDecimalPlaces(this.value)">
+                            <option value="0">0位</option>
+                            <option value="1">1位</option>
+                            <option value="2">2位</option>
+                            <option value="3">3位</option>
+                            <option value="4">4位</option>
+                            <option value="5">5位</option>
+                            <option value="6" selected>6位</option>
+                            <option value="8">8位</option>
+                            <option value="10">10位</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>角度单位:</label>
+                        <select id="angleUnit" onchange="changeAngleUnit(this.value)">
+                            <option value="rad">弧度</option>
+                            <option value="deg">角度</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-actions">
+                    <button class="action-btn" onclick="saveCustomSkin()">💾 保存当前皮肤</button>
+                    <button class="action-btn secondary" onclick="resetToDefault()">🔄 恢复默认</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-panel hidden" id="functionsPanel">
+            <div class="panel-header">
+                <h3>ƒ 自定义函数</h3>
+                <button class="close-btn" onclick="togglePanel('functionsPanel')">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="setting-section">
+                    <h4>新增自定义函数</h4>
+                    <div class="custom-function-form">
+                        <input type="text" id="funcName" placeholder="函数名，如: f">
+                        <span>(</span>
+                        <input type="text" id="funcParams" placeholder="参数，如: x">
+                        <span>) =</span>
+                        <input type="text" id="funcExpr" placeholder="表达式，如: x^2+2*x">
+                        <button class="action-btn" onclick="addCustomFunction()">添加</button>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h4>已定义函数</h4>
+                    <div class="custom-functions-list" id="customFunctionsList">
+                        <div class="empty-hint">暂无自定义函数</div>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h4>自定义运算规则</h4>
+                    <div class="rule-form">
+                        <input type="text" id="ruleName" placeholder="规则名称">
+                        <textarea id="ruleCode" placeholder="JavaScript代码，返回计算结果&#10;例如: return a + b * 2;"></textarea>
+                        <button class="action-btn" onclick="addCustomRule()">添加规则</button>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h4>内置函数参考</h4>
+                    <div class="builtin-functions">
+                        <div class="func-item"><code>sqrt(x)</code> 平方根</div>
+                        <div class="func-item"><code>abs(x)</code> 绝对值</div>
+                        <div class="func-item"><code>sin(x)</code> 正弦</div>
+                        <div class="func-item"><code>cos(x)</code> 余弦</div>
+                        <div class="func-item"><code>tan(x)</code> 正切</div>
+                        <div class="func-item"><code>asin(x)</code> 反正弦</div>
+                        <div class="func-item"><code>acos(x)</code> 反余弦</div>
+                        <div class="func-item"><code>atan(x)</code> 反正切</div>
+                        <div class="func-item"><code>log(x)</code> 自然对数</div>
+                        <div class="func-item"><code>log10(x)</code> 常用对数</div>
+                        <div class="func-item"><code>exp(x)</code> e的x次方</div>
+                        <div class="func-item"><code>pow(x,y)</code> x的y次方</div>
+                        <div class="func-item"><code>floor(x)</code> 向下取整</div>
+                        <div class="func-item"><code>ceil(x)</code> 向上取整</div>
+                        <div class="func-item"><code>round(x)</code> 四舍五入</div>
+                        <div class="func-item"><code>min(a,b)</code> 最小值</div>
+                        <div class="func-item"><code>max(a,b)</code> 最大值</div>
+                        <div class="func-item"><code>pi</code> 圆周率π</div>
+                        <div class="func-item"><code>e</code> 自然常数</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/calculator.js"></script>
+</body>
+</html>

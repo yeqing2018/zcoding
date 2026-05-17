@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>像素鸟飞行挑战 - 豪华版</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">像素鸟飞行挑战</h1>
+        </div>
+        
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="400" height="600"></canvas>
+            
+            <div id="mainMenu" class="menu-screen">
+                <div class="menu-content">
+                    <h2 class="menu-title">选择模式</h2>
+                    
+                    <div class="mode-selector">
+                        <button class="mode-btn active" data-mode="single">
+                            <span class="mode-icon">🎮</span>
+                            <span class="mode-name">单人模式</span>
+                        </button>
+                        <button class="mode-btn" data-mode="dual">
+                            <span class="mode-icon">👥</span>
+                            <span class="mode-name">双人对战</span>
+                        </button>
+                        <button class="mode-btn" data-mode="challenge">
+                            <span class="mode-icon">🏆</span>
+                            <span class="mode-name">每日挑战</span>
+                        </button>
+                    </div>
+                    
+                    <div class="section-title">选择小鸟</div>
+                    <div class="bird-selector" id="birdSelector"></div>
+                    
+                    <div class="section-title">选择场景</div>
+                    <div class="theme-selector" id="themeSelector">
+                        <button class="theme-btn active" data-theme="day">
+                            <span class="theme-preview day"></span>
+                            <span>白天</span>
+                        </button>
+                        <button class="theme-btn" data-theme="night">
+                            <span class="theme-preview night"></span>
+                            <span>夜晚</span>
+                        </button>
+                        <button class="theme-btn" data-theme="snow">
+                            <span class="theme-preview snow"></span>
+                            <span>雪地</span>
+                        </button>
+                        <button class="theme-btn" data-theme="desert">
+                            <span class="theme-preview desert"></span>
+                            <span>沙漠</span>
+                        </button>
+                    </div>
+                    
+                    <div class="menu-buttons">
+                        <button id="startGameBtn" class="pixel-btn primary">开始游戏</button>
+                        <button id="showLeaderboardBtn" class="pixel-btn secondary">排行榜</button>
+                        <button id="showAchievementsBtn" class="pixel-btn secondary">成就</button>
+                    </div>
+                    
+                    <div class="stats-preview">
+                        <span>最高分: <strong id="menuBestScore">0</strong></span>
+                        <span>累计得分: <strong id="menuTotalScore">0</strong></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="startScreen" class="overlay hidden">
+                <div class="overlay-content">
+                    <div class="bird-preview">
+                        <div class="bird-pixel" id="startBirdPreview"></div>
+                    </div>
+                    <h2>点击开始游戏</h2>
+                    <p id="controlHint">按空格键或点击屏幕让小鸟拍翅</p>
+                    <div class="best-score-display">
+                        <span>最高分：</span>
+                        <span id="startBestScore">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="gameOverScreen" class="overlay hidden">
+                <div class="overlay-content">
+                    <h2 class="game-over-text">游戏结束</h2>
+                    <div class="score-panel">
+                        <div class="score-item">
+                            <span class="score-label">本次得分</span>
+                            <span id="finalScore" class="score-value">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span class="score-label">最高分</span>
+                            <span id="bestScore" class="score-value">0</span>
+                        </div>
+                    </div>
+                    <div id="newAchievements" class="new-achievements hidden">
+                        <h3>🎉 新成就解锁！</h3>
+                        <div id="newAchievementsList"></div>
+                    </div>
+                    <div class="menu-buttons">
+                        <button id="restartBtn" class="pixel-btn primary">重新开始</button>
+                        <button id="backToMenuBtn" class="pixel-btn secondary">返回菜单</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="dualGameOverScreen" class="overlay hidden">
+                <div class="overlay-content">
+                    <h2 class="game-over-text">对战结束</h2>
+                    <div id="winnerDisplay" class="winner-display">
+                        <span id="winnerText">玩家1获胜！</span>
+                    </div>
+                    <div class="score-panel">
+                        <div class="score-item">
+                            <span class="score-label">玩家1</span>
+                            <span id="player1FinalScore" class="score-value">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span class="score-label">玩家2</span>
+                            <span id="player2FinalScore" class="score-value">0</span>
+                        </div>
+                    </div>
+                    <div class="menu-buttons">
+                        <button id="dualRestartBtn" class="pixel-btn primary">再来一局</button>
+                        <button id="dualBackToMenuBtn" class="pixel-btn secondary">返回菜单</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="leaderboardPanel" class="menu-screen hidden">
+                <div class="menu-content">
+                    <h2 class="menu-title">🏆 排行榜</h2>
+                    <div class="leaderboard-list" id="leaderboardList"></div>
+                    <button id="closeLeaderboardBtn" class="pixel-btn secondary">返回</button>
+                </div>
+            </div>
+            
+            <div id="achievementsPanel" class="menu-screen hidden">
+                <div class="menu-content">
+                    <h2 class="menu-title">🎖️ 成就</h2>
+                    <div class="achievements-list" id="achievementsList"></div>
+                    <button id="closeAchievementsBtn" class="pixel-btn secondary">返回</button>
+                </div>
+            </div>
+            
+            <div id="powerUpDisplay" class="power-up-display hidden">
+                <div id="activePowerUps"></div>
+            </div>
+            
+            <div id="achievementToast" class="achievement-toast hidden">
+                <span class="toast-icon">🏆</span>
+                <div class="toast-content">
+                    <span class="toast-title">成就解锁！</span>
+                    <span id="toastName" class="toast-name"></span>
+                </div>
+            </div>
+            
+            <div id="dualControls" class="dual-controls hidden">
+                <div class="dual-control-item">
+                    <span class="key-hint">空格</span>
+                    <span>玩家1</span>
+                </div>
+                <div class="dual-control-item">
+                    <span class="key-hint">↑</span>
+                    <span>玩家2</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-info">
+            <div class="control-hint">
+                <span class="key-hint">空格</span>
+                <span>或</span>
+                <span class="key-hint">点击</span>
+                <span>拍翅飞行</span>
+            </div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

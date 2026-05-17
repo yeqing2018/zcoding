@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>飞机大战 - 豪华版</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">飞机大战</h1>
+            <button id="settingsBtn" class="icon-btn" title="设置">⚙</button>
+            <button id="leaderboardBtn" class="icon-btn" title="排行榜">🏆</button>
+        </div>
+        <div class="game-wrapper">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            
+            <div class="ui-panel">
+                <div class="score-display">
+                    <span class="label">得分</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="wave-display">
+                    <span class="label">波次</span>
+                    <span id="wave">1</span>
+                </div>
+                <div class="lives-display">
+                    <span class="label">生命</span>
+                    <div id="lives" class="lives-icons"></div>
+                </div>
+                <div id="powerupDisplay" class="powerup-display hidden">
+                    <span class="label">火力</span>
+                    <div id="powerupLevel" class="powerup-level"></div>
+                </div>
+                <div id="shieldDisplay" class="shield-display hidden">
+                    <span class="label">护盾</span>
+                    <div class="shield-icon">🛡</div>
+                </div>
+            </div>
+
+            <div id="bossHealthContainer" class="boss-health-container hidden">
+                <div class="boss-label">BOSS</div>
+                <div class="boss-health-bar">
+                    <div id="bossHealthBar" class="boss-health-fill"></div>
+                </div>
+                <div id="bossHealthText" class="boss-health-text">100%</div>
+            </div>
+
+            <div id="bombIndicator" class="bomb-indicator hidden">
+                <span>💣 炸弹: <span id="bombCount">0</span></span>
+            </div>
+
+            <div id="waveAnnouncement" class="wave-announcement hidden">
+                <div class="wave-text">第 <span id="waveNumber">1</span> 波</div>
+                <div class="wave-subtext">准备迎战！</div>
+            </div>
+
+            <div id="startPanel" class="start-panel">
+                <h2>飞机大战</h2>
+                <p class="instructions">
+                    <strong>桌面端:</strong> ↑↓←→ 或 WASD 移动 | 空格 射击 | B 使用炸弹<br>
+                    <strong>移动端:</strong> 触摸拖拽移动 | 自动射击
+                </p>
+                <div class="powerup-info">
+                    <div class="powerup-item"><span class="pw-icon">🔥</span> 火力增强</div>
+                    <div class="powerup-item"><span class="pw-icon">🛡</span> 护盾保护</div>
+                    <div class="powerup-item"><span class="pw-icon">💣</span> 清屏炸弹</div>
+                    <div class="powerup-item"><span class="pw-icon">❤️</span> 恢复生命</div>
+                </div>
+                <div class="menu-buttons">
+                    <button id="startBtn" class="primary-btn">开始游戏</button>
+                    <button id="showLeaderboardBtn" class="secondary-btn">排行榜</button>
+                </div>
+            </div>
+
+            <div id="gameOverPanel" class="game-over-panel hidden">
+                <h2>游戏结束</h2>
+                <div class="game-over-stats">
+                    <div class="stat-row">
+                        <span class="stat-label">最终得分</span>
+                        <span id="finalScore" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">到达波次</span>
+                        <span id="finalWave" class="stat-value">1</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">击杀敌机</span>
+                        <span id="finalKills" class="stat-value">0</span>
+                    </div>
+                </div>
+                <div id="newHighScore" class="new-high-score hidden">🎉 新纪录！</div>
+                <div class="menu-buttons">
+                    <button id="restartBtn" class="primary-btn">再来一局</button>
+                    <button id="backToMenuBtn" class="secondary-btn">返回菜单</button>
+                </div>
+            </div>
+
+            <div id="leaderboardPanel" class="leaderboard-panel hidden">
+                <h2>🏆 排行榜</h2>
+                <div id="leaderboardList" class="leaderboard-list"></div>
+                <button id="closeLeaderboardBtn" class="secondary-btn">关闭</button>
+            </div>
+
+            <div id="settingsPanel" class="settings-panel hidden">
+                <h2>⚙ 设置</h2>
+                <div class="settings-group">
+                    <label class="setting-label">
+                        <span>背景音乐</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="musicToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </label>
+                    <div class="volume-control">
+                        <span>音乐音量</span>
+                        <input type="range" id="musicVolume" min="0" max="100" value="50">
+                        <span id="musicVolumeValue">50%</span>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <label class="setting-label">
+                        <span>游戏音效</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="soundToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </label>
+                    <div class="volume-control">
+                        <span>音效音量</span>
+                        <input type="range" id="soundVolume" min="0" max="100" value="70">
+                        <span id="soundVolumeValue">70%</span>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <label class="setting-label">
+                        <span>屏幕震动</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="shakeToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </label>
+                </div>
+                <div class="settings-group">
+                    <label class="setting-label">
+                        <span>粒子特效</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="particlesToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </label>
+                </div>
+                <button id="closeSettingsBtn" class="primary-btn">保存</button>
+            </div>
+
+            <div id="pausePanel" class="pause-panel hidden">
+                <h2>游戏暂停</h2>
+                <div class="menu-buttons">
+                    <button id="resumeBtn" class="primary-btn">继续游戏</button>
+                    <button id="quitBtn" class="secondary-btn">退出游戏</button>
+                </div>
+            </div>
+        </div>
+        <div class="game-footer">
+            <p>消灭敌机获取分数，收集道具增强能力，击败Boss挑战高分！</p>
+        </div>
+    </div>
+    <script src="js/game.js"></script>
+</body>
+</html>

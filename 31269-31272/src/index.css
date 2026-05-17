@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.theme-dark {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.theme-purple {
+  background: linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #6d28d9 100%);
+}
+
+.font-size-small {
+  font-size: 14px;
+}
+
+.font-size-small .text-5xl { font-size: 2.5rem; }
+.font-size-small .text-4xl { font-size: 2rem; }
+.font-size-small .text-3xl { font-size: 1.5rem; }
+.font-size-small .text-2xl { font-size: 1.25rem; }
+.font-size-small .text-xl { font-size: 1rem; }
+.font-size-small .text-lg { font-size: 0.875rem; }
+
+.font-size-medium {
+  font-size: 16px;
+}
+
+.font-size-large {
+  font-size: 18px;
+}
+
+.font-size-large .text-5xl { font-size: 4rem; }
+.font-size-large .text-4xl { font-size: 3rem; }
+.font-size-large .text-3xl { font-size: 2.25rem; }
+.font-size-large .text-2xl { font-size: 1.75rem; }
+.font-size-large .text-xl { font-size: 1.5rem; }
+.font-size-large .text-lg { font-size: 1.25rem; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px) rotate(-5deg); }
+  75% { transform: translateX(8px) rotate(5deg); }
+}
+
+.animate-shake-fast {
+  animation: shake 0.15s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
+  50% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.8), 0 0 60px rgba(6, 182, 212, 0.4); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+@media (max-width: 640px) {
+  .game-container {
+    padding: 1rem;
+  }
+
+  .choice-button {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .choice-button .text-5xl {
+    font-size: 2rem;
+  }
+
+  .battle-circle {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .battle-circle .text-6xl {
+    font-size: 2.5rem;
+  }
+
+  .stats-card {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .stats-card .text-4xl {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .choice-button {
+    width: 6rem;
+    height: 6rem;
+  }
+
+  .choice-button .text-5xl {
+    font-size: 2.5rem;
+  }
+
+  .battle-circle {
+    width: 6rem;
+    height: 6rem;
+  }
+
+  .battle-circle .text-6xl {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .choice-button {
+    width: 7rem;
+    height: 7rem;
+  }
+
+  .battle-circle {
+    width: 8rem;
+    height: 8rem;
+  }
+}
