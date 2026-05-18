@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高尔夫球模拟小游戏 v2</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <header id="game-header">
+            <h1>🏌️ 高尔夫球模拟 v2</h1>
+            <div id="score-info">
+                <div class="info-item">
+                    <span class="label">球场</span>
+                    <span id="course-name" class="value">公园球场</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">当前洞</span>
+                    <span id="current-hole" class="value">1</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">标准杆</span>
+                    <span id="par" class="value">3</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">已用杆</span>
+                    <span id="strokes" class="value">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">总杆数</span>
+                    <span id="total-strokes" class="value">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main id="game-main">
+            <canvas id="game-canvas"></canvas>
+            
+            <aside id="sidebar">
+                <div class="panel" id="player-panel">
+                    <h3>👤 球员信息</h3>
+                    <div class="player-info">
+                        <div class="player-name" id="player-name">高尔夫球手</div>
+                        <div class="player-level">等级 <span id="player-level">1</span></div>
+                        <div class="exp-bar">
+                            <div class="exp-fill" id="exp-fill"></div>
+                            <span class="exp-text" id="exp-text">0/100</span>
+                        </div>
+                        <div class="player-stats">
+                            <div class="stat-row">
+                                <span>💪 力量</span>
+                                <span id="stat-power">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>🎯 精度</span>
+                                <span id="stat-accuracy">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>🧠 心理素质</span>
+                                <span id="stat-mental">0</span>
+                            </div>
+                            <div class="attribute-points" id="attr-points" style="display:none;">
+                                可用点数: <span id="attr-points-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel" id="club-panel">
+                    <h3>🏌️ 球杆选择</h3>
+                    <div class="club-list" id="club-list"></div>
+                    <div class="club-info" id="club-info">
+                        <div class="club-name" id="selected-club-name">一号木杆</div>
+                        <div class="club-stats">
+                            <span>距离: <span id="club-distance">280</span>码</span>
+                            <span>精度: <span id="club-accuracy">70</span>%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel" id="wind-panel">
+                    <h3>🌬️ 风力</h3>
+                    <div class="wind-info">
+                        <div class="wind-arrow" id="wind-arrow">→</div>
+                        <div class="wind-speed"><span id="wind-speed">0</span> m/s</div>
+                        <div class="wind-direction" id="wind-direction">东风</div>
+                    </div>
+                </div>
+
+                <div class="panel" id="scoreboard">
+                    <h3>📊 计分板</h3>
+                    <div id="score-list"></div>
+                    <div id="total-score">
+                        <div class="total-row">
+                            <span>标准杆总计</span>
+                            <span id="total-par">72</span>
+                        </div>
+                        <div class="total-row">
+                            <span>您的成绩</span>
+                            <span id="your-total">0</span>
+                        </div>
+                        <div class="total-row highlight">
+                            <span>与标准杆差</span>
+                            <span id="score-diff">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel" id="ai-panel" style="display:none;">
+                    <h3>🤖 AI 对手</h3>
+                    <div class="ai-list" id="ai-list"></div>
+                </div>
+            </aside>
+        </main>
+
+        <footer id="game-footer">
+            <div id="power-meter">
+                <div class="power-label">力度</div>
+                <div class="power-bar">
+                    <div id="power-fill"></div>
+                </div>
+            </div>
+            <div id="instructions">
+                <span>💡 按住鼠标拖动调整方向和力度，松开发球</span>
+            </div>
+            <div class="footer-buttons">
+                <button id="replay-btn" class="secondary-btn">📹 查看回放</button>
+                <button id="stats-btn" class="secondary-btn">📈 球员属性</button>
+                <button id="next-hole-btn" class="hidden">下一洞 →</button>
+            </div>
+        </footer>
+
+        <div id="start-screen" class="overlay">
+            <div class="overlay-content large">
+                <h2>🏌️ 高尔夫球模拟 v2</h2>
+                <p>体验真实的高尔夫物理模拟，挑战多种球场！</p>
+                
+                <div class="game-modes">
+                    <h3>选择游戏模式</h3>
+                    <div class="mode-buttons">
+                        <button class="mode-btn active" data-mode="single">
+                            <span class="mode-icon">🏌️</span>
+                            <span class="mode-name">单人模式</span>
+                            <span class="mode-desc">独自挑战18洞</span>
+                        </button>
+                        <button class="mode-btn" data-mode="ai">
+                            <span class="mode-icon">🤖</span>
+                            <span class="mode-name">AI对战</span>
+                            <span class="mode-desc">与AI球友竞技</span>
+                        </button>
+                        <button class="mode-btn" data-mode="tournament">
+                            <span class="mode-icon">🏆</span>
+                            <span class="mode-name">锦标赛</span>
+                            <span class="mode-desc">4轮72洞竞技</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="course-selection">
+                    <h3>选择球场</h3>
+                    <div class="course-buttons" id="course-buttons"></div>
+                </div>
+
+                <div class="difficulty-selection" id="difficulty-selection" style="display:none;">
+                    <h3>选择AI难度</h3>
+                    <div class="difficulty-buttons" id="difficulty-buttons"></div>
+                </div>
+
+                <ul class="instructions-list">
+                    <li>🎯 按住鼠标拖动瞄准</li>
+                    <li>💪 拖动距离控制力度</li>
+                    <li>🏌️ 松开鼠标击球</li>
+                    <li>🌬️ 注意风力和地形影响</li>
+                    <li>⛳ 用最少杆数将球打入洞</li>
+                </ul>
+                <button id="start-btn">开始游戏</button>
+            </div>
+        </div>
+
+        <div id="hole-complete" class="overlay hidden">
+            <div class="overlay-content">
+                <h2 id="hole-result-title">🎉 完成！</h2>
+                <p id="hole-result-text"></p>
+                <div class="shot-analysis" id="shot-analysis"></div>
+                <div class="complete-buttons">
+                    <button id="replay-shot-btn">📹 查看击球回放</button>
+                    <button id="continue-btn">继续</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="replay-modal" class="overlay hidden">
+            <div class="overlay-content large">
+                <h2>📹 击球回放</h2>
+                <canvas id="replay-canvas" width="800" height="500"></canvas>
+                <div class="replay-controls">
+                    <button id="play-replay-btn">▶️ 播放</button>
+                    <button id="pause-replay-btn">⏸️ 暂停</button>
+                    <button id="rewind-replay-btn">⏮️ 重置</button>
+                    <input type="range" id="replay-slider" min="0" max="100" value="0">
+                </div>
+                <div class="trajectory-analysis" id="trajectory-analysis"></div>
+                <button id="close-replay-btn">关闭</button>
+            </div>
+        </div>
+
+        <div id="stats-modal" class="overlay hidden">
+            <div class="overlay-content">
+                <h2>📈 球员属性</h2>
+                <div class="stats-detail">
+                    <div class="stat-detail-row">
+                        <span>💪 力量</span>
+                        <div class="stat-bar">
+                            <div class="stat-fill" id="power-bar-fill"></div>
+                            <span class="stat-value" id="power-value">0/20</span>
+                        </div>
+                        <button class="upgrade-btn" data-stat="power">+</button>
+                    </div>
+                    <div class="stat-detail-row">
+                        <span>🎯 精度</span>
+                        <div class="stat-bar">
+                            <div class="stat-fill" id="accuracy-bar-fill"></div>
+                            <span class="stat-value" id="accuracy-value">0/20</span>
+                        </div>
+                        <button class="upgrade-btn" data-stat="accuracy">+</button>
+                    </div>
+                    <div class="stat-detail-row">
+                        <span>🧠 心理素质</span>
+                        <div class="stat-bar">
+                            <div class="stat-fill" id="mental-bar-fill"></div>
+                            <span class="stat-value" id="mental-value">0/20</span>
+                        </div>
+                        <button class="upgrade-btn" data-stat="mental">+</button>
+                    </div>
+                </div>
+                <div class="available-points">
+                    可用属性点: <span id="available-points">0</span>
+                </div>
+                <button id="close-stats-btn">关闭</button>
+            </div>
+        </div>
+
+        <div id="game-complete" class="overlay hidden">
+            <div class="overlay-content large">
+                <h2>🏆 比赛结束！</h2>
+                <div id="final-results"></div>
+                <div class="leaderboard" id="leaderboard"></div>
+                <div class="complete-buttons">
+                    <button id="restart-btn">重新开始</button>
+                    <button id="main-menu-btn">返回主菜单</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/courses.js"></script>
+    <script src="js/clubs.js"></script>
+    <script src="js/physics.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/replay.js"></script>
+    <script src="js/network.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
